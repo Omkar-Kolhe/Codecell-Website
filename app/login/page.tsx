@@ -2,31 +2,31 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Terminal, Shield, ArrowLeft } from "lucide-react";
+import { Shield, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authProgress, setAuthProgress] = useState(0);
   const [authPhase, setAuthPhase] = useState("");
   const [usernameInput, setUsernameInput] = useState("");
-  const [passwordInput, setPasswordInput] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const setAuthCookie = () => {
+    if (typeof document !== "undefined") {
+      document.cookie = "auth-token=codecell-dashboard; path=/; max-age=86400; SameSite=Lax";
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage("");
-    const cleanPassword = passwordInput.trim().replace(/\s+/g, " ");
-    if (
-      usernameInput.trim() === "abc@gmail.com" &&
-      (cleanPassword === "codecellgone wild" || cleanPassword === "codecellgonewild")
-    ) {
+
+    if (usernameInput.trim()) {
       setIsAuthenticating(true);
       setAuthProgress(0);
     } else {
-      setErrorMessage("INVALID_CREDENTIALS: ACCESS DENIED");
+      setErrorMessage("USERNAME_REQUIRED: ENTER A USER ID");
     }
   };
 
@@ -52,10 +52,11 @@ export default function LoginPage() {
       if (progress >= 100) {
         clearInterval(interval);
         setTimeout(() => {
+          setAuthCookie();
           localStorage.setItem("dashboard_isLoggedIn", "true");
           localStorage.setItem("dashboard_username", usernameInput || "root_operator");
           localStorage.setItem("dashboard_collegeName", "TSEC Mumbai");
-          window.location.href = "/dashboard";
+          window.location.assign("/dashboard");
         }, 800);
       }
     }, 50);
@@ -147,32 +148,6 @@ export default function LoginPage() {
               />
             </div>
 
-            <div>
-              <label className="block text-[10px] text-[#4A4A4A] uppercase tracking-wider mb-1.5">
-                Secret Hash Key (Password):
-              </label>
-              <input
-                type="password"
-                required
-                placeholder="••••••••••••"
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-                className="
-                  w-full
-                  bg-[#0D0D0D]
-                  border
-                  border-[#2A2A2A]
-                  px-4
-                  py-3
-                  text-xs
-                  text-[#F0EDE6]
-                  focus:outline-none
-                  focus:border-[#E8FF00]
-                  transition-colors
-                "
-              />
-            </div>
-
             <div className="flex items-center justify-between text-[10px] text-[#4A4A4A] pt-2">
               <label className="flex items-center gap-2">
                 <input
@@ -181,7 +156,7 @@ export default function LoginPage() {
                 />
                 <span>RETAIN_SESSION</span>
               </label>
-              <a href="#" className="hover:text-[#4BE2C4] transition-colors">FORGOT_SECRET_KEY?</a>
+              <span className="text-[#4A4A4A]">ACCESS_READY</span>
             </div>
 
             {errorMessage && (

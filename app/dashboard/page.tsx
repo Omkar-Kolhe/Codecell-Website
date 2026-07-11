@@ -412,19 +412,24 @@ export default function WeeklyPlatform() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#070707] text-[#EBE6DD] font-sans selection:bg-[#D4AF37]/30 selection:text-[#FFFFFF] relative overflow-hidden">
-      {/* Background Matrix Grid */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03] z-0" style={{
+    <div className="min-h-screen bg-[#060606] text-[#F3EDE2] font-sans selection:bg-[#D4AF37]/40 selection:text-white relative overflow-hidden">
+      {/* Cinematic background layers */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(212,175,55,0.18),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(75,226,196,0.08),_transparent_28%)] z-0" />
+      <div className="absolute inset-0 pointer-events-none opacity-[0.035] z-0" style={{
         backgroundImage: `
           linear-gradient(to right, #D4AF37 1px, transparent 1px),
           linear-gradient(to bottom, #D4AF37 1px, transparent 1px)
         `,
-        backgroundSize: "45px 45px"
+        backgroundSize: "46px 46px"
+      }} />
+      <div className="absolute inset-0 pointer-events-none opacity-[0.08] z-0" style={{
+        backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.16) 1px, transparent 1px)`,
+        backgroundSize: "18px 18px"
       }} />
 
-      {/* Decorative Gold Radial Glow */}
-      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-[#D4AF37] opacity-[0.03] blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-15%] w-[450px] h-[450px] rounded-full bg-[#D4AF37] opacity-[0.02] blur-[120px] pointer-events-none" />
+      {/* Decorative glows */}
+      <div className="absolute top-[-12%] right-[-10%] w-[520px] h-[520px] rounded-full bg-[#D4AF37] opacity-[0.045] blur-[160px] pointer-events-none" />
+      <div className="absolute bottom-[-12%] left-[-16%] w-[460px] h-[460px] rounded-full bg-[#4BE2C4] opacity-[0.03] blur-[140px] pointer-events-none" />
 
       {!isLoggedIn && !showLoginForm ? (
         /* ==================== COMING SOON SCREEN ==================== */
@@ -588,13 +593,16 @@ export default function WeeklyPlatform() {
         <div className="min-h-screen flex flex-col z-10 relative">
           
           {/* TOP NAVIGATION HEADER */}
-          <header className="sticky top-0 z-40 w-full bg-[#0A0A0A]/95 border-b border-[#D4AF37]/15 backdrop-blur-md">
-            <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-6">
-              
-              {/* Logo / Title */}
+          <header className="sticky top-0 z-40 w-full border-b border-[#D4AF37]/20 bg-[#060606]/85 backdrop-blur-2xl shadow-[0_0_35px_rgba(0,0,0,0.35)]">
+            <div className="max-w-7xl mx-auto flex h-20 items-center justify-between px-6">
               <div className="flex items-center gap-3">
-                <span className="text-2xl text-[#D4AF37]">♛</span>
+                <div className="flex h-11 w-11 items-center justify-center rounded-full border border-[#D4AF37]/30 bg-gradient-to-br from-[#D4AF37]/20 to-[#F5E6A3]/10 text-xl text-[#D4AF37] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+                  ♛
+                </div>
                 <div>
+                  <div className="inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/20 bg-[#D4AF37]/10 px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.25em] text-[#D4AF37] mb-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#10B981] animate-pulse" /> live arena
+                  </div>
                   <span className="font-serif text-sm tracking-wider font-bold text-[#FFFFFF] block uppercase">
                     TSEC CODECELL
                   </span>
@@ -604,21 +612,19 @@ export default function WeeklyPlatform() {
                 </div>
               </div>
 
-              {/* Desktop User Info Panel */}
-              <div className="hidden md:flex items-center gap-4">
-                <div className="text-right">
-                  <span className="font-mono text-[10px] text-[#D4AF37] block uppercase">// ACTIVE_SESSION</span>
+              <div className="hidden md:flex items-center gap-3">
+                <div className="rounded-full border border-[#D4AF37]/20 bg-[#0D0D0D] px-3 py-2 text-right shadow-inner">
+                  <span className="font-mono text-[10px] text-[#D4AF37] block uppercase">// active session</span>
                   <span className="text-xs font-semibold text-[#FFFFFF] block">{username}</span>
                 </div>
-                <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-[#D4AF37] to-[#F5E6A3] text-[#0A0A0A] font-bold text-xs flex items-center justify-center border border-[#D4AF37]/30">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-tr from-[#D4AF37] to-[#F5E6A3] text-[#0A0A0A] font-bold text-xs border border-[#D4AF37]/30 shadow-[0_0_18px_rgba(212,175,55,0.2)]">
                   {username.split(" ").map(n => n[0]).join("").toUpperCase()}
                 </div>
               </div>
 
-              {/* Mobile Hamburger Trigger */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 hover:bg-[#1C1C1C] rounded border border-[#222] text-[#EBE6DD]"
+                className="md:hidden rounded border border-[#2A2A2A] bg-[#0D0D0D]/80 p-2 text-[#EBE6DD] shadow-inner"
               >
                 {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
               </button>
@@ -631,16 +637,16 @@ export default function WeeklyPlatform() {
             {/* LEFT SIDEBAR: PROFILE & QUICK NAVIGATION (takes ~20% width) */}
             <aside className={`lg:w-1/5 shrink-0 flex flex-col gap-6 ${mobileMenuOpen ? "block" : "hidden lg:flex"}`}>
               {/* User Profile Card */}
-              <div className="border border-[#D4AF37]/20 bg-[#0E0E0E] p-6 rounded-lg relative overflow-hidden">
-                {/* Visual Chess Indicator Background */}
-                <div className="absolute right-[-20px] bottom-[-20px] text-[#D4AF37]/5 font-serif text-9xl select-none pointer-events-none">
+              <div className="relative overflow-hidden rounded-2xl border border-[#D4AF37]/20 bg-gradient-to-br from-[#0E0E0E] via-[#111111] to-[#080808] p-6 shadow-[0_0_35px_rgba(0,0,0,0.3)]">
+                <div className="absolute right-[-20px] bottom-[-24px] text-[#D4AF37]/8 font-serif text-9xl select-none pointer-events-none">
                   ♞
                 </div>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(212,175,55,0.16),_transparent_32%)]" />
 
-                <span className="font-mono text-[9px] text-[#D4AF37] tracking-widest block mb-4 uppercase">// OPERATIVE_DOSSIER</span>
+                <span className="relative font-mono text-[9px] text-[#D4AF37] tracking-widest block mb-4 uppercase">// operative dossier</span>
                 
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="h-10 w-10 rounded bg-[#1C1C1C] border border-[#D4AF37]/30 text-[#D4AF37] flex items-center justify-center font-bold text-sm font-mono shadow-[inset_0_2px_8px_rgba(0,0,0,0.8)]">
+                <div className="relative flex items-center gap-3 mb-5">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#D4AF37]/30 bg-[#1C1C1C] text-[#D4AF37] font-bold text-sm font-mono shadow-[inset_0_2px_8px_rgba(0,0,0,0.8)]">
                     {username.split(" ").map(n => n[0]).join("").toUpperCase()}
                   </div>
                   <div>
@@ -649,27 +655,25 @@ export default function WeeklyPlatform() {
                   </div>
                 </div>
 
-                {/* Stats Grid */}
-                <div className="grid grid-cols-2 gap-3 border-t border-[#1C1C1C] pt-4 font-mono">
-                  <div>
-                    <span className="text-[9px] text-[#8A8880] block uppercase tracking-wider">RANK</span>
+                <div className="relative grid grid-cols-2 gap-3 border-t border-[#2A2A2A] pt-4 font-mono">
+                  <div className="rounded-xl border border-[#1F1F1F] bg-[#0A0A0A]/70 p-2.5">
+                    <span className="text-[9px] text-[#8A8880] block uppercase tracking-wider">rank</span>
                     <span className="text-sm text-[#D4AF37] font-bold">#47</span>
                   </div>
-                  <div>
-                    <span className="text-[9px] text-[#8A8880] block uppercase tracking-wider">STREAK</span>
+                  <div className="rounded-xl border border-[#1F1F1F] bg-[#0A0A0A]/70 p-2.5">
+                    <span className="text-[9px] text-[#8A8880] block uppercase tracking-wider">streak</span>
                     <span className="text-sm text-[#10B981] font-bold flex items-center gap-1">
                       <Zap size={10} className="fill-current" /> 4w
                     </span>
                   </div>
-                  <div className="col-span-2 mt-1">
-                    <span className="text-[9px] text-[#8A8880] block uppercase tracking-wider">TRIALS SOLVED</span>
+                  <div className="col-span-2 rounded-xl border border-[#1F1F1F] bg-[#0A0A0A]/70 p-2.5">
+                    <span className="text-[9px] text-[#8A8880] block uppercase tracking-wider">trials solved</span>
                     <span className="text-xs text-[#FFFFFF]">08 / 15</span>
                   </div>
                 </div>
               </div>
 
-              {/* Navigation Menu */}
-              <div className="border border-[#1A1A1A] bg-[#0A0A0A] p-4 rounded-lg">
+              <div className="rounded-2xl border border-[#2A2A2A] bg-[#0A0A0A]/80 p-4 shadow-[0_0_25px_rgba(0,0,0,0.25)]">
                 <span className="font-mono text-[9px] text-[#8A8880] tracking-widest block mb-3 px-2 uppercase">// NAV_SYSTEM</span>
                 <nav className="flex flex-col gap-1 text-sm font-mono">
                   {[
@@ -677,14 +681,13 @@ export default function WeeklyPlatform() {
                     { id: "discussions", label: "Discussions", icon: MessageSquare },
                     { id: "leaderboard", label: "Leaderboard", icon: Trophy },
                     { id: "challenges", label: "Weekly Challenges", icon: Calendar },
-                    { id: "compiler", label: "Practice Arena", icon: Terminal },
                     { id: "submissions", label: "Submissions", icon: History },
                     { id: "announcements", label: "Announcements", icon: Bell },
                     { id: "profile", label: "Profile", icon: User }
                   ].map((item) => {
                     const Icon = item.icon;
                     // Highlight Discussions too since they share dashboard feed focus
-                    const isActive = activePage === item.id || (item.id === "discussions" && activePage === "dashboard");
+                    const isActive = activePage === item.id;
                     return (
                       <button
                         key={item.id}
@@ -692,9 +695,9 @@ export default function WeeklyPlatform() {
                           setActivePage(item.id as PageId);
                           setMobileMenuOpen(false);
                         }}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded transition-all text-left uppercase text-xs tracking-wider ${
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left uppercase text-xs tracking-wider ${
                           isActive
-                            ? "bg-[#D4AF37]/10 border-l-2 border-[#D4AF37] text-[#D4AF37] font-bold"
+                            ? "bg-[#D4AF37]/12 border-l-2 border-[#D4AF37] text-[#D4AF37] font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
                             : "text-[#8A8880] hover:text-[#FFFFFF] hover:bg-[#121212] border-l-2 border-transparent"
                         }`}
                       >
@@ -713,7 +716,7 @@ export default function WeeklyPlatform() {
                       setIsLoggedIn(false);
                       setShowLoginForm(false);
                     }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded transition-all text-left uppercase text-xs tracking-wider text-red-500 hover:text-red-400 hover:bg-red-950/20 border-l-2 border-transparent mt-2 font-mono"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left uppercase text-xs tracking-wider text-red-500 hover:text-red-400 hover:bg-red-950/20 border-l-2 border-transparent mt-2 font-mono"
                   >
                     <Lock size={14} />
                     Disconnect
@@ -735,17 +738,37 @@ export default function WeeklyPlatform() {
                     exit={{ opacity: 0, y: -15 }}
                     className="flex flex-col gap-6"
                   >
-                    {/* Post Composer Panel */}
-                    <div className="border border-[#1A1A1A] bg-[#0E0E0E] p-6 rounded-lg shadow-xl relative">
-                      <span className="font-mono text-[9px] text-[#D4AF37] tracking-widest block mb-4 uppercase">// CREATE_DISCUSSION</span>
-                      <div className="flex items-start gap-4">
-                        <div className="h-8 w-8 rounded bg-[#1C1C1C] border border-[#222] text-[#D4AF37] flex items-center justify-center font-bold text-xs shrink-0">
+                    <div className="relative overflow-hidden rounded-2xl border border-[#D4AF37]/20 bg-gradient-to-br from-[#101010] via-[#121212] to-[#080808] p-6 shadow-[0_0_40px_rgba(0,0,0,0.35)]">
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(212,175,55,0.16),_transparent_30%)]" />
+                      <div className="relative mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                        <div>
+                          <span className="font-mono text-[9px] text-[#D4AF37] tracking-[0.3em] block mb-2 uppercase">// command center</span>
+                          <h2 className="font-serif text-xl text-[#FFFFFF] tracking-wider uppercase">Signal board</h2>
+                          <p className="mt-1 max-w-2xl text-xs text-[#8A8880]">
+                            Share insights, coordinate strategies, and keep the team moving through the current week.
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {[
+                            {label: "Live forum", value: "12 threads"},
+                            {label: "Your streak", value: "4 weeks"},
+                            {label: "Next trial", value: "Week 4"}
+                          ].map((item) => (
+                            <div key={item.label} className="rounded-full border border-[#2A2A2A] bg-[#0A0A0A]/80 px-3 py-1.5 text-[10px] font-mono text-[#8A8880]">
+                              <span className="text-[#D4AF37]">{item.label}:</span> {item.value}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="relative flex items-start gap-4">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#D4AF37]/30 bg-[#1C1C1C] text-[#D4AF37] font-bold text-xs shrink-0">
                           {username.split(" ").map(n => n[0]).join("").toUpperCase()}
                         </div>
                         <div className="flex-1">
                           <button
                             onClick={() => setShowNewPostForm(true)}
-                            className="w-full text-left bg-[#121212] hover:bg-[#1A1A1A] border border-[#2A2A2A] hover:border-[#D4AF37]/40 px-4 py-3 rounded text-xs text-[#8A8880] transition-all cursor-pointer font-mono"
+                            className="w-full text-left rounded-xl border border-[#2A2A2A] bg-[#0D0D0D]/90 px-4 py-3 text-xs text-[#8A8880] transition-all cursor-pointer font-mono shadow-inner hover:border-[#D4AF37]/35 hover:bg-[#121212]"
                           >
                             Start a discussion, ask a doubt, or share your approach...
                           </button>
@@ -824,7 +847,7 @@ export default function WeeklyPlatform() {
                         return (
                           <div
                             key={post.id}
-                            className="border border-[#1A1A1A] hover:border-[#D4AF37]/35 bg-[#0E0E0E] p-6 rounded-lg relative transition-all duration-300 shadow-lg"
+                            className="relative rounded-2xl border border-[#2A2A2A] bg-gradient-to-br from-[#101010] via-[#0F0F0F] to-[#090909] p-6 shadow-[0_0_30px_rgba(0,0,0,0.28)] transition-all duration-300 hover:-translate-y-1 hover:border-[#D4AF37]/35 hover:shadow-[0_0_35px_rgba(212,175,55,0.12)]"
                           >
                             {/* Header details */}
                             <div className="flex items-center justify-between mb-4">
@@ -1229,9 +1252,8 @@ export default function WeeklyPlatform() {
                               ) : (
                                 <button
                                   onClick={() => {
-                                    // Enter challenge simulator
                                     setActiveProblem(COMPILER_PROBLEMS[0]);
-                                    setActivePage("compiler");
+                                    setActivePage("dashboard");
                                   }}
                                   className={`px-4 py-2 border uppercase tracking-widest text-[9px] font-bold rounded transition-all flex items-center gap-1 ${
                                     isLive
