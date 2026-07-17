@@ -2,22 +2,62 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, Float, Sparkles, Html, SpotLight } from "@react-three/drei";
-import { useRef, useState, useEffect, Suspense } from "react";
+import { useRef, useState, useEffect, useMemo, Suspense } from "react";
 import * as THREE from "three";
 import { ChessPiece } from "./ChessPiece";
 import { MotionValue, useMotionValueEvent } from "framer-motion";
 import { motion, AnimatePresence } from "framer-motion";
+import type { Week } from "@/lib/api-client";
 
-export const TIMELINE_DATA = [
-  { week: 1, theme: "The Opening", piece: "♙", rank: "Pawn", desc: "", difficulty: "Easy" },
-  { week: 2, theme: "Knight's Tour", piece: "♘", rank: "Knight", desc: "", difficulty: "Easy/Medium" },
-  { week: 3, theme: "Bishop's Diagonal", piece: "♗", rank: "Bishop", desc: "", difficulty: "Medium" },
-  { week: 4, theme: "Rook's File", piece: "♖", rank: "Rook", desc: "", difficulty: "Medium" },
-  { week: 5, theme: "Queen's Gambit", piece: "♕", rank: "Queen", desc: "", difficulty: "Hard" },
-  { week: 6, theme: "Castle Defense", piece: "♖", rank: "Castle", desc: "", difficulty: "Hard" },
-  { week: 7, theme: "Checkmate Strategy", piece: "♔", rank: "King", desc: "", difficulty: "Expert" },
-  { week: 8, theme: "Grandmaster", piece: "♛", rank: "Grandmaster", desc: "", difficulty: "Master" },
+const PIECE_META = [
+  { piece: "♙", rank: "Pawn", difficulty: "Easy" },
+  { piece: "♘", rank: "Knight", difficulty: "Easy/Medium" },
+  { piece: "♗", rank: "Bishop", difficulty: "Medium" },
+  { piece: "♖", rank: "Rook", difficulty: "Medium" },
+  { piece: "♕", rank: "Queen", difficulty: "Hard" },
+  { piece: "♖", rank: "Castle", difficulty: "Hard" },
+  { piece: "♔", rank: "King", difficulty: "Expert" },
+  { piece: "♛", rank: "Grandmaster", difficulty: "Master" },
 ];
+
+// Fallback theme/desc text used for any stage without a matching backend week
+// (e.g. weeks haven't been created yet, or fewer than 8 exist).
+const FALLBACK_TEXT = [
+  { theme: "The Opening", desc: "" },
+  { theme: "Knight's Tour", desc: "" },
+  { theme: "Bishop's Diagonal", desc: "" },
+  { theme: "Rook's File", desc: "" },
+  { theme: "Queen's Gambit", desc: "" },
+  { theme: "Castle Defense", desc: "" },
+  { theme: "Checkmate Strategy", desc: "" },
+  { theme: "Grandmaster", desc: "" },
+];
+
+interface TimelineEntry {
+  week: number;
+  theme: string;
+  piece: string;
+  rank: string;
+  desc: string;
+  difficulty: string;
+}
+
+// Merges live backend weeks (assumed pre-sorted by week_number) with the
+// static piece/rank/difficulty visuals, positionally by index (stage 0-7).
+function buildTimelineData(weeksData?: Week[]): TimelineEntry[] {
+  return PIECE_META.map((meta, i) => {
+    const apiWeek = weeksData?.[i];
+    const fallback = FALLBACK_TEXT[i];
+    return {
+      week: apiWeek?.week_number ?? i + 1,
+      theme: apiWeek?.theme || apiWeek?.chapter_name || fallback.theme,
+      desc: apiWeek?.description || fallback.desc,
+      piece: meta.piece,
+      rank: meta.rank,
+      difficulty: meta.difficulty,
+    };
+  });
+}
 
 function StandardBoard() {
   return (
@@ -68,9 +108,10 @@ const PATH_COORDS = [
 interface TimelineProps {
   scrollProgress: MotionValue<number>;
   stageIndex: number;
+  timelineData: TimelineEntry[];
 }
 
-function AnimatedMovingPiece({ scrollProgress, stageIndex }: TimelineProps) {
+function AnimatedMovingPiece({ scrollProgress, stageIndex, timelineData }: TimelineProps) {
   const pieceRef = useRef<THREE.Group>(null);
   const htmlGroupRef = useRef<THREE.Group>(null);
   const visualRef = useRef<THREE.Group>(null);
@@ -141,7 +182,7 @@ function AnimatedMovingPiece({ scrollProgress, stageIndex }: TimelineProps) {
     }
   });
 
-  const activeData = TIMELINE_DATA[stageIndex];
+  const activeData = timelineData[stageIndex];
   const isKing = stageIndex === 7;
 
   return (
@@ -285,8 +326,15 @@ function CameraTracker({ scrollProgress }: { scrollProgress: MotionValue<number>
   return null;
 }
 
-export default function TimelineScene({ scrollProgress }: { scrollProgress: MotionValue<number> }) {
+interface TimelineSceneProps {
+  scrollProgress: MotionValue<number>;
+  weeksData?: Week[];
+}
+
+export default function TimelineScene({ scrollProgress, weeksData }: TimelineSceneProps) {
   const [stageIndex, setStageIndex] = useState(0);
+
+  const timelineData = useMemo(() => buildTimelineData(weeksData), [weeksData]);
 
   useMotionValueEvent(scrollProgress, "change", (latest) => {
     const idx = Math.min(7, Math.max(0, Math.floor(latest * 8)));
@@ -311,7 +359,7 @@ export default function TimelineScene({ scrollProgress }: { scrollProgress: Moti
           
           <Float speed={2} rotationIntensity={0.05} floatIntensity={0.1}>
             <StandardBoard />
-            <AnimatedMovingPiece scrollProgress={scrollProgress} stageIndex={stageIndex} />
+            <AnimatedMovingPiece scrollProgress={scrollProgress} stageIndex={stageIndex} timelineData={timelineData} />
           </Float>
           
           <CameraTracker scrollProgress={scrollProgress} />
