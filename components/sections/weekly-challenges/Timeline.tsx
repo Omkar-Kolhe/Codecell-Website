@@ -3,10 +3,15 @@
 import { motion, useScroll, useMotionValueEvent, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import type { Week } from "@/lib/api-client";
 
 const TimelineSceneDynamic = dynamic(() => import('@/components/3d/TimelineScene'), { ssr: false });
 
-export function Timeline() {
+interface TimelineComponentProps {
+  weeks?: Week[];
+}
+
+export function Timeline({ weeks }: TimelineComponentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -32,7 +37,7 @@ export function Timeline() {
       {/* 3D Background - Sticky to stay in view during scroll */}
       <div className="absolute inset-0 z-0">
         <div className="sticky top-0 w-full h-screen">
-          <TimelineSceneDynamic scrollProgress={scrollYProgress} />
+          <TimelineSceneDynamic scrollProgress={scrollYProgress} weeksData={weeks} />
         </div>
       </div>
 
