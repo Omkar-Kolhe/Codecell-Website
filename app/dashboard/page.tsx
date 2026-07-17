@@ -295,8 +295,6 @@ export default function WeeklyPlatform() {
           }
         })
         .catch(err => console.error("Failed to fetch profile:", err));
-      } else {
-        window.location.assign("/login");
       }
     }
   }, []);
