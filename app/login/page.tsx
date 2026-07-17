@@ -31,6 +31,22 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
+    // Check for token in URL from OAuth redirect
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
+      if (token) {
+        localStorage.setItem("jwt_token", token);
+        // Clear token from URL for cleaner look
+        window.history.replaceState({}, document.title, "/login");
+        setIsAuthenticating(true);
+      } else if (localStorage.getItem("jwt_token")) {
+        window.location.assign("/dashboard");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     if (!isAuthenticating) return;
 
     let progress = 0;
@@ -54,8 +70,6 @@ export default function LoginPage() {
         setTimeout(() => {
           setAuthCookie();
           localStorage.setItem("dashboard_isLoggedIn", "true");
-          localStorage.setItem("dashboard_username", usernameInput || "root_operator");
-          localStorage.setItem("dashboard_collegeName", "TSEC Mumbai");
           window.location.assign("/dashboard");
         }, 800);
       }
@@ -90,7 +104,6 @@ export default function LoginPage() {
           </h2>
         </div>
 
-        {/* Decryption Interface Overlay */}
         {isAuthenticating ? (
           <div className="space-y-6 py-4 font-mono text-xs">
             <div className="flex justify-between items-center text-[#4BE2C4] font-bold">
@@ -120,43 +133,10 @@ export default function LoginPage() {
             </div>
           </div>
         ) : (
-          /* Form */
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <label className="block text-[10px] text-[#4A4A4A] uppercase tracking-wider mb-1.5">
-                User ID / Email:
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="root_operator"
-                value={usernameInput}
-                onChange={(e) => setUsernameInput(e.target.value)}
-                className="
-                  w-full
-                  bg-[#0D0D0D]
-                  border
-                  border-[#2A2A2A]
-                  px-4
-                  py-3
-                  text-xs
-                  text-[#F0EDE6]
-                  focus:outline-none
-                  focus:border-[#E8FF00]
-                  transition-colors
-                "
-              />
-            </div>
-
-            <div className="flex items-center justify-between text-[10px] text-[#4A4A4A] pt-2">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  className="bg-transparent border border-[#2A2A2A] checked:bg-[#4BE2C4] rounded-none focus:ring-0"
-                />
-                <span>RETAIN_SESSION</span>
-              </label>
-              <span className="text-[#4A4A4A]">ACCESS_READY</span>
+          /* Google OAuth Button */
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-[10px] text-[#4A4A4A] pt-2 mb-4">
+              <span className="text-[#4BE2C4]">SECURE_CHANNEL</span>
             </div>
 
             {errorMessage && (
@@ -166,24 +146,35 @@ export default function LoginPage() {
             )}
 
             <button
-              type="submit"
+              onClick={() => {
+                window.location.href = "http://localhost:8080/oauth/google/login";
+              }}
               className="
                 w-full
                 mt-6
-                btn-sweep
-                bg-[#E8FF00]
-                text-[#0D0D0D]
-                border
-                border-[#E8FF00]
+                bg-[#FFFFFF]
+                hover:bg-[#F2F2F2]
+                text-[#1F1F1F]
                 py-3.5
-                text-xs
-                font-bold
-                tracking-[0.15em]
+                px-4
+                text-sm
+                font-medium
+                rounded
+                shadow-sm
+                transition-all
+                flex items-center justify-center gap-3
               "
             >
-              [ AUTHENTICATE SYSTEM ACCESS ]
+              <svg className="w-5 h-5" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                <path fill="none" d="M0 0h48v48H0z" />
+              </svg>
+              Sign in with Google
             </button>
-          </form>
+          </div>
         )}
 
         {/* Footer */}
