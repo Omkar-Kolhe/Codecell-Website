@@ -65,9 +65,15 @@ class ApiError extends Error {
 // Used by Weeks endpoints — WeekController writes the payload directly,
 // no envelope (e.g. c.JSON(200, weeks)).
 async function apiGet<T>(path: string): Promise<T> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("jwt_token");
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
+    headers,
   });
  
   if (!res.ok) {
@@ -93,9 +99,15 @@ interface Envelope<T> {
 }
  
 async function apiGetEnveloped<T>(path: string): Promise<T> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("jwt_token");
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
+    headers,
   });
  
   const body = (await res.json()) as Envelope<T>;

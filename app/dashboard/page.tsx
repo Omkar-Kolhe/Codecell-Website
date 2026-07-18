@@ -218,10 +218,17 @@ export default function WeeklyPlatform() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [activePage, setActivePage] = useState<PageId>("dashboard");
-  const [username, setUsername] = useState("Arjun Rao");
-  const [collegeName, setCollegeName] = useState("TSEC Mumbai");
+  const [username, setUsername] = useState("");
+  const [collegeName, setCollegeName] = useState("");
   const [passcode, setPasscode] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  
+  // Profile completion states
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [newUsername, setNewUsername] = useState("");
+  const [newCollegeName, setNewCollegeName] = useState("");
+  const [newYear, setNewYear] = useState("");
+  const [isSubmittingProfile, setIsSubmittingProfile] = useState(false);
 
   // Dashboard states
   const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS);
@@ -259,16 +266,73 @@ export default function WeeklyPlatform() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const savedLogin = localStorage.getItem("dashboard_isLoggedIn");
-      if (savedLogin === "true") {
+      const token = localStorage.getItem("jwt_token");
+      
+      if (token) {
         setIsLoggedIn(true);
-        const savedUser = localStorage.getItem("dashboard_username");
-        if (savedUser) setUsername(savedUser);
-        const savedCollege = localStorage.getItem("dashboard_collegeName");
-        if (savedCollege) setCollegeName(savedCollege);
+        
+        // Fetch real profile from backend
+        fetch("http://localhost:8080/profile", {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(res => res.json())
+        .then(resBody => {
+          if (!resBody.success) {
+            console.error("Profile fetch failed", resBody);
+            return;
+          }
+          const data = resBody.data;
+          
+          if (data.username) {
+            setUsername(data.username);
+            setNewUsername(data.username);
+          }
+          if (data.college_name) setCollegeName(data.college_name);
+          
+          // Check if profile is incomplete
+          if (!data.college_name || !data.year) {
+            setShowProfileModal(true);
+          }
+        })
+        .catch(err => console.error("Failed to fetch profile:", err));
       }
     }
   }, []);
+
+  const handleCompleteProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCollegeName.trim() || !newYear.trim() || !newUsername.trim()) return;
+    
+    setIsSubmittingProfile(true);
+    try {
+      const token = localStorage.getItem("jwt_token");
+      const res = await fetch("http://localhost:8080/profile/complete", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          username: newUsername,
+          college_name: newCollegeName,
+          year: newYear
+        })
+      });
+      
+      if (res.ok) {
+        setCollegeName(newCollegeName);
+        setUsername(newUsername);
+        setShowProfileModal(false);
+      } else {
+        const errorData = await res.json();
+        alert(errorData.error?.message || "Failed to update profile");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmittingProfile(false);
+    }
+  };
 
   // Handle Login
   const handleLogin = (e: React.FormEvent) => {
@@ -301,7 +365,7 @@ export default function WeeklyPlatform() {
       author: username,
       college: collegeName,
       role: "Participant",
-      avatar: username.split(" ").map(n => n[0]).join("").toUpperCase(),
+      avatar: (username || "?").split(" ").map(n => n?.[0] || "").join("").toUpperCase(),
       rank: "#47",
       title: composerTitle,
       content: composerContent,
@@ -432,7 +496,7 @@ export default function WeeklyPlatform() {
       <div className="absolute top-[-12%] right-[-10%] w-[520px] h-[520px] rounded-full bg-[#D4AF37] opacity-[0.045] blur-[160px] pointer-events-none" />
       <div className="absolute bottom-[-12%] left-[-16%] w-[460px] h-[460px] rounded-full bg-[#4BE2C4] opacity-[0.03] blur-[140px] pointer-events-none" />
 
-      {!isLoggedIn && !showLoginForm ? (
+      {!isLoggedIn ? (
         /* ==================== COMING SOON SCREEN ==================== */
         <div className="min-h-screen flex flex-col items-center justify-center p-6 relative z-10">
           <div className="w-full max-w-4xl glass border border-[#D4AF37]/20 bg-[#0E0E0E]/90 p-8 md:p-12 rounded-xl relative shadow-2xl overflow-hidden flex flex-col items-center text-center">
@@ -496,7 +560,7 @@ export default function WeeklyPlatform() {
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 w-full justify-center max-w-md">
               <button
-                onClick={() => setShowLoginForm(true)}
+                onClick={() => window.location.assign('/login')}
                 className="flex-1 border border-[#D4AF37] bg-[#D4AF37]/5 hover:bg-[#D4AF37] hover:text-[#0A0A0A] text-[#D4AF37] font-mono text-xs font-bold tracking-[0.2em] uppercase py-4 px-6 rounded transition-all flex items-center justify-center gap-3 shadow-[0_0_15px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] group"
               >
                 CONNECT SHELL <Terminal size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -510,84 +574,82 @@ export default function WeeklyPlatform() {
             </div>
           </div>
         </div>
-      ) : !isLoggedIn && showLoginForm ? (
-        /* ==================== LOGIN SCREEN ==================== */
-        <div className="min-h-screen flex items-center justify-center p-6 relative z-10">
-          <div className="w-full max-w-lg glass border border-[#D4AF37]/20 bg-[#0E0E0E]/90 p-8 rounded-xl relative shadow-2xl overflow-hidden">
-            {/* Corner Decorative Borders */}
-            <div className="absolute top-0 left-0 w-8 h-[1px] bg-[#D4AF37]" />
-            <div className="absolute top-0 left-0 w-[1px] h-8 bg-[#D4AF37]" />
-            <div className="absolute bottom-0 right-0 w-8 h-[1px] bg-[#D4AF37]" />
-            <div className="absolute bottom-0 right-0 w-[1px] h-8 bg-[#D4AF37]" />
+      ) : showProfileModal ? (
+        /* ==================== PROFILE COMPLETION FORM ==================== */
+        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center z-10 relative px-6">
+          <motion.div 
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="w-full max-w-md border border-[#D4AF37]/30 bg-[#0A0A0A] p-8 shadow-2xl relative"
+          >
+            <div className="absolute top-0 left-0 w-4 h-[1px] bg-[#D4AF37]" />
+            <div className="absolute top-0 left-0 w-[1px] h-4 bg-[#D4AF37]" />
+            <div className="absolute bottom-0 right-0 w-4 h-[1px] bg-[#D4AF37]" />
+            <div className="absolute bottom-0 right-0 w-[1px] h-4 bg-[#D4AF37]" />
 
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1 border border-[#D4AF37]/25 bg-[#D4AF37]/5 text-xs text-[#D4AF37] uppercase tracking-[0.25em] font-bold rounded-full mb-4">
-                <Shield size={12} className="animate-pulse" /> CodeCell Shell v2.0
-              </div>
-              <h1 className="font-serif text-3xl md:text-4xl text-[#FFFFFF] tracking-wider uppercase mb-1">
-                TSEC CodeCell
-              </h1>
-              <p className="font-mono text-xs text-[#D4AF37] uppercase tracking-[0.2em] mb-4">
-                Weekly Challenges 2026
+            <div className="mb-6 border-b border-[#2A2A2A] pb-4">
+              <h2 className="text-2xl font-bold uppercase text-[#F0EDE6] tracking-wider font-serif">
+                COMPLETE PROFILE
+              </h2>
+              <p className="text-[10px] text-[#D4AF37] uppercase tracking-widest font-mono mt-1">
+                REQUIRED FOR RANKING
               </p>
-              <div className="w-24 h-[1.5px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mt-2" />
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-5">
+            <form onSubmit={handleCompleteProfile} className="space-y-5">
               <div>
-                <label className="block font-mono text-[10px] text-[#8A8880] uppercase tracking-widest mb-1.5">// USER_HANDLE</label>
+                <label className="block font-mono text-[10px] text-[#8A8880] uppercase tracking-widest mb-1.5">
+                  // USERNAME
+                </label>
                 <input
                   type="text"
-                  placeholder="e.g. Arjun Rao"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full bg-[#121212] border border-[#2A2A2A] focus:border-[#D4AF37] px-4 py-3 rounded text-sm text-[#FFFFFF] outline-none font-mono tracking-wide shadow-inner transition-colors"
+                  required
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  placeholder="Choose a unique username"
+                  className="w-full bg-transparent border border-[#2A2A2A] focus:border-[#D4AF37] px-4 py-3 rounded text-sm text-[#FFFFFF] outline-none font-mono tracking-wide"
                 />
               </div>
-
               <div>
-                <label className="block font-mono text-[10px] text-[#8A8880] uppercase tracking-widest mb-1.5">// COLLEGE_NAME</label>
+                <label className="block font-mono text-[10px] text-[#8A8880] uppercase tracking-widest mb-1.5">
+                  // COLLEGE NAME
+                </label>
                 <input
                   type="text"
+                  required
+                  value={newCollegeName}
+                  onChange={(e) => setNewCollegeName(e.target.value)}
                   placeholder="e.g. TSEC Mumbai"
-                  value={collegeName}
-                  onChange={(e) => setCollegeName(e.target.value)}
-                  className="w-full bg-[#121212] border border-[#2A2A2A] focus:border-[#D4AF37] px-4 py-3 rounded text-sm text-[#FFFFFF] outline-none font-mono tracking-wide shadow-inner transition-colors"
+                  className="w-full bg-transparent border border-[#2A2A2A] focus:border-[#D4AF37] px-4 py-3 rounded text-sm text-[#FFFFFF] outline-none font-mono tracking-wide"
                 />
               </div>
-
               <div>
-                <label className="block font-mono text-[10px] text-[#8A8880] uppercase tracking-widest mb-1.5">// ACCESS_KEY (OPTIONAL)</label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={passcode}
-                  onChange={(e) => setPasscode(e.target.value)}
-                  className="w-full bg-[#121212] border border-[#2A2A2A] focus:border-[#D4AF37] px-4 py-3 rounded text-sm text-[#FFFFFF] outline-none font-mono tracking-wide shadow-inner transition-colors"
-                />
+                <label className="block font-mono text-[10px] text-[#8A8880] uppercase tracking-widest mb-1.5">
+                  // CURRENT YEAR
+                </label>
+                <select
+                  required
+                  value={newYear}
+                  onChange={(e) => setNewYear(e.target.value)}
+                  className="w-full bg-[#0A0A0A] border border-[#2A2A2A] focus:border-[#D4AF37] px-4 py-3 rounded text-sm text-[#FFFFFF] outline-none font-mono tracking-wide appearance-none"
+                >
+                  <option value="" disabled>Select Year</option>
+                  <option value="FE">First Year (FE)</option>
+                  <option value="SE">Second Year (SE)</option>
+                  <option value="TE">Third Year (TE)</option>
+                  <option value="BE">Fourth Year (BE)</option>
+                </select>
               </div>
-
               <button
                 type="submit"
-                className="w-full border border-[#D4AF37] hover:bg-[#D4AF37]/10 text-[#D4AF37] font-mono text-xs font-bold tracking-[0.2em] uppercase py-4 rounded transition-all flex items-center justify-center gap-3 mt-8 shadow-[0_0_15px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] group"
+                disabled={isSubmittingProfile}
+                className="w-full border border-[#D4AF37] hover:bg-[#D4AF37]/10 text-[#D4AF37] font-mono text-xs font-bold tracking-[0.2em] uppercase py-4 rounded transition-all mt-4"
               >
-                CONNECT SHELL <Terminal size={14} className="group-hover:translate-x-1 transition-transform" />
+                {isSubmittingProfile ? "UPDATING..." : "SAVE PROFILE"}
               </button>
             </form>
-
-            <button
-              onClick={() => setShowLoginForm(false)}
-              className="mt-6 w-full text-center font-mono text-[10px] text-[#8A8880] hover:text-[#D4AF37] transition-colors uppercase tracking-widest block"
-            >
-              ← Back to Event Info
-            </button>
-
-            <div className="mt-8 pt-6 border-t border-[#1C1C1C] text-center">
-              <span className="font-mono text-[9px] text-[#555550] tracking-widest uppercase">
-                CODE. COMPETE. CONQUER.
-              </span>
-            </div>
-          </div>
+          </motion.div>
         </div>
       ) : (
         /* ==================== MAIN APPLICATION SHELL ==================== */
@@ -619,8 +681,18 @@ export default function WeeklyPlatform() {
                   <span className="text-xs font-semibold text-[#FFFFFF] block">{username}</span>
                 </div>
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-tr from-[#D4AF37] to-[#F5E6A3] text-[#0A0A0A] font-bold text-xs border border-[#D4AF37]/30 shadow-[0_0_18px_rgba(212,175,55,0.2)]">
-                  {username.split(" ").map(n => n[0]).join("").toUpperCase()}
+                  {(username || "?").split(" ").map(n => n?.[0] || "").join("").toUpperCase()}
                 </div>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem("jwt_token");
+                    localStorage.removeItem("dashboard_isLoggedIn");
+                    window.location.assign("/login");
+                  }}
+                  className="ml-2 flex items-center justify-center rounded-full border border-red-500/30 bg-red-500/10 px-4 py-2 text-[10px] font-mono font-bold uppercase tracking-widest text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors"
+                >
+                  LOGOUT
+                </button>
               </div>
 
               <button
@@ -648,7 +720,7 @@ export default function WeeklyPlatform() {
 
                 <div className="relative flex items-center gap-3 mb-5">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#D4AF37]/30 bg-[#1C1C1C] text-[#D4AF37] font-bold text-sm font-mono shadow-[inset_0_2px_8px_rgba(0,0,0,0.8)]">
-                    {username.split(" ").map(n => n[0]).join("").toUpperCase()}
+                    {(username || "?").split(" ").map(n => n?.[0] || "").join("").toUpperCase()}
                   </div>
                   <div>
                     <h3 className="text-sm font-serif font-bold text-[#FFFFFF] truncate max-w-[120px]">{username}</h3>
@@ -763,7 +835,7 @@ export default function WeeklyPlatform() {
 
                       <div className="relative flex items-start gap-4">
                         <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#D4AF37]/30 bg-[#1C1C1C] text-[#D4AF37] font-bold text-xs shrink-0">
-                          {username.split(" ").map(n => n[0]).join("").toUpperCase()}
+                          {(username || "?").split(" ").map(n => n?.[0] || "").join("").toUpperCase()}
                         </div>
                         <div className="flex-1">
                           <button
