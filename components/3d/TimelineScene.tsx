@@ -8,7 +8,25 @@ import { ChessPiece } from "./ChessPiece";
 import { MotionValue, useMotionValueEvent } from "framer-motion";
 import { motion, AnimatePresence } from "framer-motion";
 
-export const TIMELINE_DATA = [
+export interface Week {
+  week: number;
+  theme: string;
+  piece: string;
+  rank: string;
+  desc: string;
+  difficulty: string;
+}
+
+export type TimelineEntry = Week;
+
+export function buildTimelineData(weeksData?: Week[]): TimelineEntry[] {
+  if (weeksData && weeksData.length > 0) {
+    return weeksData;
+  }
+  return TIMELINE_DATA;
+}
+
+export const TIMELINE_DATA: TimelineEntry[] = [
   // ROUND 1: Building the Foundation
   { 
     week: 1, 
