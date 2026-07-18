@@ -9,14 +9,73 @@ import { MotionValue, useMotionValueEvent } from "framer-motion";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const TIMELINE_DATA = [
-  { week: 1, theme: "The Opening", piece: "♙", rank: "Pawn", desc: "", difficulty: "Easy" },
-  { week: 2, theme: "Knight's Tour", piece: "♘", rank: "Knight", desc: "", difficulty: "Easy/Medium" },
-  { week: 3, theme: "Bishop's Diagonal", piece: "♗", rank: "Bishop", desc: "", difficulty: "Medium" },
-  { week: 4, theme: "Rook's File", piece: "♖", rank: "Rook", desc: "", difficulty: "Medium" },
-  { week: 5, theme: "Queen's Gambit", piece: "♕", rank: "Queen", desc: "", difficulty: "Hard" },
-  { week: 6, theme: "Castle Defense", piece: "♖", rank: "Castle", desc: "", difficulty: "Hard" },
-  { week: 7, theme: "Checkmate Strategy", piece: "♔", rank: "King", desc: "", difficulty: "Expert" },
-  { week: 8, theme: "Grandmaster", piece: "♛", rank: "Grandmaster", desc: "", difficulty: "Master" },
+  // ROUND 1: Building the Foundation
+  { 
+    week: 1, 
+    theme: "The Opening", 
+    piece: "♙", 
+    rank: "Pawn", 
+    desc: "Every grandmaster started with a single step. Secure your first syntax wins and set the board for an epic journey ahead!", 
+    difficulty: "Easy/medium" 
+  },
+  { 
+    week: 2, 
+    theme: "Knight's Tour", 
+    piece: "♘", 
+    rank: "Knight", 
+    desc: "Time to think outside the straight lines! Master unpredictable control flows and hop over logic obstacles with agility.", 
+    difficulty: "Easy/Medium" 
+  },
+  { 
+    week: 3, 
+    theme: "Bishop's Diagonal", 
+    piece: "♗", 
+    rank: "Bishop", 
+    desc: "Slice through complexity. Slice your data structures cleanly and run algorithms that span the full length of the board.", 
+    difficulty: "Medium/Hard" 
+  },
+  { 
+    week: 4, 
+    theme: "Rook's File", 
+    piece: "♖", 
+    rank: "Rook", 
+    desc: "Build unshakeable, linear strength. Lock down your file inputs, data streams, and structural logic with absolute precision.", 
+    difficulty: "Medium/Hard" 
+  },
+  { 
+    week: 5, 
+    theme: "Queen's Gambit", 
+    piece: "♕", 
+    rank: "Queen", 
+    desc: "The ultimate test of versatility. Command competetive programming strategies to dominate the arena.", 
+    difficulty: "Medium/Hard" 
+  },
+  { 
+    week: 6, 
+    theme: "Castle Defense", 
+    piece: "♖", 
+    rank: "Castle", 
+    desc: "The final stand of Round 1. Secure your perimeter by optimization, debugging, and proving your code is entirely bulletproof.", 
+    difficulty: "Hard" 
+  },
+
+  // ROUND 2: The Championship Arena
+  { 
+    week: 7, 
+    theme: "Checkmate Strategy", 
+    piece: "♔", 
+    rank: "King", 
+    desc: "Welcome to Round 2! The endgame is here—design elite, high-level system architectures where every single line of code counts.", 
+    difficulty: "Expert" 
+  },
+  { 
+    week: 8, 
+    theme: "Grandmaster", 
+    piece: "♛", 
+    rank: "Grandmaster", 
+    desc: "The pinnacle of the tournament. Onsite at TSEC Bandra campus, outwit the final challenge, and claim the crown!", 
+    difficulty: "Master" 
+  }
 ];
 
 function StandardBoard() {

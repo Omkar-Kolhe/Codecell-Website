@@ -18,7 +18,7 @@ const FEATURES = [
     icon: "♞",
     subtitle: "KNIGHT",
     title: "N-Queens Narrative",
-    description: "This isn't a standard contest. You're challenged — each week with new constraint. Miss a placement and lose path bonus points. Survive all 8 weeks to claim checkmate.",
+    description: "This isn't a standard contest. You're challenged — each week with new constraint. Miss a placement and lose path bonus points. Survive all 6 weeks to claim checkmate.",
     badge: "Story-Driven",
     highlightIcon: true
   },
@@ -26,7 +26,7 @@ const FEATURES = [
     icon: "♛",
     subtitle: "QUEEN",
     title: "Live Leaderboard",
-    description: "Rankings update in real-time after submission. Season score persists across all 8 weeks. Weekly rank resets every Sunday — fight for both crowns: the sprint and the season.",
+    description: "Rankings update in real-time after submission. Season score persists across all 6 weeks. Weekly rank resets every Sunday — fight for both crowns: the sprint and the season.",
     badge: "Real-Time Rankings",
     highlightIcon: true
   },
@@ -50,7 +50,7 @@ const FEATURES = [
     icon: "♚",
     subtitle: "KING",
     title: "Certificates & Prizes",
-    description: "Top season finalists win prizes from the prize pool. Top participants who clears 8 weeks earns a certificate of excellence. No participation reward — earn it.",
+    description: "Top season finalists win prizes from the prize pool. Top participants who clears both rounds earns a certificate of excellence and exciting prizes.",
     badge: "Cash Prizes",
     highlightIcon: true
   }
