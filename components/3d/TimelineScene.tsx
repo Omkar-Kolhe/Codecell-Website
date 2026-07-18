@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, Float, Sparkles, Html, SpotLight } from "@react-three/drei";
-import { useRef, useState, useEffect, Suspense } from "react";
+import { useRef, useState, useEffect, useMemo, Suspense } from "react";
 import * as THREE from "three";
 import { ChessPiece } from "./ChessPiece";
 import { MotionValue, useMotionValueEvent } from "framer-motion";
@@ -127,9 +127,10 @@ const PATH_COORDS = [
 interface TimelineProps {
   scrollProgress: MotionValue<number>;
   stageIndex: number;
+  timelineData: TimelineEntry[];
 }
 
-function AnimatedMovingPiece({ scrollProgress, stageIndex }: TimelineProps) {
+function AnimatedMovingPiece({ scrollProgress, stageIndex, timelineData }: TimelineProps) {
   const pieceRef = useRef<THREE.Group>(null);
   const htmlGroupRef = useRef<THREE.Group>(null);
   const visualRef = useRef<THREE.Group>(null);
@@ -200,7 +201,7 @@ function AnimatedMovingPiece({ scrollProgress, stageIndex }: TimelineProps) {
     }
   });
 
-  const activeData = TIMELINE_DATA[stageIndex];
+  const activeData = timelineData[stageIndex];
   const isKing = stageIndex === 7;
 
   return (
@@ -344,8 +345,15 @@ function CameraTracker({ scrollProgress }: { scrollProgress: MotionValue<number>
   return null;
 }
 
-export default function TimelineScene({ scrollProgress }: { scrollProgress: MotionValue<number> }) {
+interface TimelineSceneProps {
+  scrollProgress: MotionValue<number>;
+  weeksData?: Week[];
+}
+
+export default function TimelineScene({ scrollProgress, weeksData }: TimelineSceneProps) {
   const [stageIndex, setStageIndex] = useState(0);
+
+  const timelineData = useMemo(() => buildTimelineData(weeksData), [weeksData]);
 
   useMotionValueEvent(scrollProgress, "change", (latest) => {
     const idx = Math.min(7, Math.max(0, Math.floor(latest * 8)));
@@ -370,7 +378,7 @@ export default function TimelineScene({ scrollProgress }: { scrollProgress: Moti
           
           <Float speed={2} rotationIntensity={0.05} floatIntensity={0.1}>
             <StandardBoard />
-            <AnimatedMovingPiece scrollProgress={scrollProgress} stageIndex={stageIndex} />
+            <AnimatedMovingPiece scrollProgress={scrollProgress} stageIndex={stageIndex} timelineData={timelineData} />
           </Float>
           
           <CameraTracker scrollProgress={scrollProgress} />

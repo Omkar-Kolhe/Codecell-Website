@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono, Inter, Orbitron } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono, Inter, Orbitron, Poppins } from "next/font/google";
 
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
@@ -31,6 +31,12 @@ const orbitron = Orbitron({
   weight: ["400", "500", "600", "700", "800", "900"],
 });
 
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+});
+
 export const metadata: Metadata = {
   title: "TSEC CodeCell",
   description: "The official coding committee of Thadomal Shahani Engineering College",
@@ -47,7 +53,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${inter.variable} ${orbitron.variable}`}
+      className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${inter.variable} ${orbitron.variable} ${poppins.variable}`}
       suppressHydrationWarning
     >
       <body className="antialiased" suppressHydrationWarning>

@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { Countdown } from "@/components/layout/Countdown";
 import { LAUNCH_DATE } from "@/lib/countdown";
+import { MarkdownRenderer } from "@/components/layout/MarkdownRenderer";
 
 // Types
 type PageId =
@@ -96,13 +97,13 @@ const INITIAL_POSTS: Post[] = [
     avatar: "SK",
     rank: "#3",
     title: "Week 3 · Greedy vs DP Trap: Locally optimal placements fail globally",
-    content: "Most submissions on the 'Guarded Diagonals' challenge got burned on the third hidden test case. The trap is that a greedy sweep coordinates locally optimal queen positions without calculating constraint propagation on outer edges. The correct O(N log N) approach uses constraint tightness. Link to references in comments.",
+    content: "Most submissions on the **Guarded Diagonals** challenge got burned on the third hidden test case. The trap is that a greedy sweep coordinates locally optimal queen positions without calculating constraint propagation on outer edges. The correct $O(N \\log N)$ approach uses constraint tightness. Link to references in comments.",
     tags: ["DSA", "DP", "Week 3", "Editorial"],
     upvotes: 96,
     commentsCount: 2,
     time: "2 hours ago",
     comments: [
-      { author: "ayush_m", content: "That tie-break key in constraint tightness is exactly where my solution was failing. Thanks for this breakdown!", time: "1h ago" },
+      { author: "ayush_m", content: "That tie-break key in constraint tightness is exactly where my solution was failing. Thanks for this breakdown! For a set of coordinates $S$, the mathematical formulation is:\n\n$$ f(S) = \\sum_{i \\in S} d(i) $$\n\nThis makes a huge difference.", time: "1h ago" },
       { author: "rohan_c", content: "Great note. We should do a deep dive coding session on this on Discord.", time: "45m ago" }
     ]
   },
@@ -114,13 +115,13 @@ const INITIAL_POSTS: Post[] = [
     avatar: "WN",
     rank: "#2",
     title: "Week 4 Announcement: The Sabotage Pawn on d3 explained",
-    content: "Operatives, Chapter IV - 'The Sabotage' is now live on the meta board. A black pawn is planted at coordinate d3. This forbids any placement that falls under the horizontal, vertical, or diagonal reach of this pawn. All 5 sub-challenges compile around backtracking filters with pre-marked static obstacles. ELO points are survival-weighted.",
+    content: "Operatives, **Chapter IV - 'The Sabotage'** is now live on the meta board. A black pawn is planted at coordinate $d_3$. This forbids any placement that falls under the horizontal, vertical, or diagonal reach of this pawn. All 5 sub-challenges compile around backtracking filters with pre-marked static obstacles.\n\n$$\\text{Forbidden Cells} = \\{ (x, y) \\mid x = x_p \\lor y = y_p \\lor \\lvert x - x_p \\rvert = \\lvert y - y_p \\rvert \\}$$\n\nAll ELO points are survival-weighted.",
     tags: ["Graphs", "Backtracking", "Week 4", "Announcements"],
     upvotes: 142,
     commentsCount: 1,
     time: "4 hours ago",
     comments: [
-      { author: "divya_s", content: "The ELO drop on dead-end squares is steep (-15). Check twice before hitting submit!", time: "2h ago" }
+      { author: "divya_s", content: "The ELO drop on dead-end squares is steep ($-15$). Check twice before hitting submit!", time: "2h ago" }
     ]
   },
   {
@@ -131,7 +132,7 @@ const INITIAL_POSTS: Post[] = [
     avatar: "KM",
     rank: "#4",
     title: "BFS optimization tips for Knight's Shortest Path",
-    content: "If you're writing in Python, represent the coordinates as bit flags rather than tuples. Tuple allocation inside the main queue loop is causing TLE (Time Limit Exceeded) for board layouts greater than 32x32. Using raw bit shifts speeds up state checks by almost 400%.",
+    content: "If you're writing in Python, represent the coordinates as bit flags rather than tuples. Tuple allocation inside the main queue loop is causing TLE (Time Limit Exceeded) for board layouts greater than $32 \\times 32$. Using raw bit shifts speeds up state checks by almost $400\\%$, reducing time complexity to $O(V + E)$ where $V = N^2$ and $E = 8N^2$.",
     tags: ["BFS", "Graphs", "Optimization"],
     upvotes: 68,
     commentsCount: 0,
@@ -170,17 +171,17 @@ const COMPILER_PROBLEMS = [
     title: "N-Queens Survival",
     difficulty: "Hard",
     points: 100,
-    desc: "Given the coordinate of a hostile pawn on an 8x8 chessboard, count the number of valid ways to place 8 queens such that no two queens attack each other, and no queen shares a cell or diagonal coordinate attacked by the pawn.",
-    inputFormat: "A single coordinate string of the pawn (e.g. 'd3').",
+    desc: "Given the coordinate of a hostile pawn on an $8 \\times 8$ chessboard, count the number of valid ways to place $8$ queens such that no two queens attack each other, and no queen shares a cell or diagonal coordinate attacked by the pawn. The solver must scale under $O(N!)$ worst case backtracking bound.",
+    inputFormat: "A single coordinate string of the pawn (e.g. `'d3'`).",
     outputFormat: "Return the integer representing the count of valid board combinations.",
     constraints: [
-      "Board is strictly 8x8.",
-      "The pawn is represented as a lowercase column letter [a-h] and row number [1-8].",
-      "Pawn attack rule: A pawn attacks the two diagonally adjacent squares in the next rank (row) above it."
+      "Board is strictly $8 \\times 8$.",
+      "The pawn is represented as a lowercase column letter $[a-h]$ and row number $[1-8]$.",
+      "Pawn attack rule: A pawn attacks the two diagonally adjacent squares in the next rank (row) above it: $(r+1, c\\pm1)$."
     ],
     sampleInput: "pawn = 'd3'",
     sampleOutput: "46",
-    explanation: "With the pawn on d3, the cells c4 and e4 are forbidden coordinates. Backtracking through the 92 base N-Queens solutions yields exactly 46 placements that avoid these cells.",
+    explanation: "With the pawn on $d_3$, the cells $c_4$ and $e_4$ are forbidden coordinates. Backtracking through the $92$ base N-Queens solutions yields exactly $46$ placements that avoid these cells.",
     codeTemplates: {
       cpp: `#include <iostream>\n#include <string>\nusing namespace std;\n\nint countSurvival(string pawn) {\n    // Your backtracking logic here\n    // Pawn at pawn[0]-'a' and pawn[1]-'1'\n    return 46;\n}\n\nint main() {\n    cout << countSurvival("d3") << endl;\n    return 0;\n}`,
       python: `def count_survival(pawn: str) -> int:\n    # Write your N-Queens survival logic here\n    # pawn is format like "d3"\n    return 46\n\n# Test call\nprint(count_survival("d3"))`,
@@ -193,16 +194,16 @@ const COMPILER_PROBLEMS = [
     title: "Knight's Shortest Path",
     difficulty: "Medium",
     points: 80,
-    desc: "Find the minimum moves required for a standard chess Knight starting at coordinate 'start' to reach target 'target' on an 8x8 board.",
-    inputFormat: "Two space-separated board coordinate strings, e.g., 'a1 h8'.",
+    desc: "Find the minimum moves required for a standard chess Knight starting at coordinate `start` to reach target `target` on an $8 \\times 8$ board. The algorithm should complete within $O(N^2)$ time where $N$ represents board dimensions.",
+    inputFormat: "Two space-separated board coordinate strings, e.g., `'a1 h8'`.",
     outputFormat: "Return minimum move count integer.",
     constraints: [
-      "Coordinates are strictly within 'a1' to 'h8'.",
-      "Knight must jump in L-shape (2 steps vertical/1 horizontal or vice versa)."
+      "Coordinates are strictly within `'a1'` to `'h8'`.",
+      "Knight must jump in L-shape ($2$ steps vertical, $1$ horizontal or vice versa)."
     ],
     sampleInput: "a1 h8",
     sampleOutput: "6",
-    explanation: "Shortest route spans 6 moves across the board cells.",
+    explanation: "Shortest route spans $6$ moves across the board cells.",
     codeTemplates: {
       cpp: `#include <iostream>\n#include <string>\nusing namespace std;\n\nint minKnightMoves(string start, string target) {\n    return 6;\n}`,
       python: `def min_knight_moves(start: str, target: str) -> int:\n    return 6`,
@@ -217,10 +218,17 @@ export default function WeeklyPlatform() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [activePage, setActivePage] = useState<PageId>("dashboard");
-  const [username, setUsername] = useState("Arjun Rao");
-  const [collegeName, setCollegeName] = useState("TSEC Mumbai");
+  const [username, setUsername] = useState("");
+  const [collegeName, setCollegeName] = useState("");
   const [passcode, setPasscode] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  
+  // Profile completion states
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [newUsername, setNewUsername] = useState("");
+  const [newCollegeName, setNewCollegeName] = useState("");
+  const [newYear, setNewYear] = useState("");
+  const [isSubmittingProfile, setIsSubmittingProfile] = useState(false);
 
   // Dashboard states
   const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS);
@@ -258,16 +266,73 @@ export default function WeeklyPlatform() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const savedLogin = localStorage.getItem("dashboard_isLoggedIn");
-      if (savedLogin === "true") {
+      const token = localStorage.getItem("jwt_token");
+      
+      if (token) {
         setIsLoggedIn(true);
-        const savedUser = localStorage.getItem("dashboard_username");
-        if (savedUser) setUsername(savedUser);
-        const savedCollege = localStorage.getItem("dashboard_collegeName");
-        if (savedCollege) setCollegeName(savedCollege);
+        
+        // Fetch real profile from backend
+        fetch("http://localhost:8080/profile", {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(res => res.json())
+        .then(resBody => {
+          if (!resBody.success) {
+            console.error("Profile fetch failed", resBody);
+            return;
+          }
+          const data = resBody.data;
+          
+          if (data.username) {
+            setUsername(data.username);
+            setNewUsername(data.username);
+          }
+          if (data.college_name) setCollegeName(data.college_name);
+          
+          // Check if profile is incomplete
+          if (!data.college_name || !data.year) {
+            setShowProfileModal(true);
+          }
+        })
+        .catch(err => console.error("Failed to fetch profile:", err));
       }
     }
   }, []);
+
+  const handleCompleteProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCollegeName.trim() || !newYear.trim() || !newUsername.trim()) return;
+    
+    setIsSubmittingProfile(true);
+    try {
+      const token = localStorage.getItem("jwt_token");
+      const res = await fetch("http://localhost:8080/profile/complete", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          username: newUsername,
+          college_name: newCollegeName,
+          year: newYear
+        })
+      });
+      
+      if (res.ok) {
+        setCollegeName(newCollegeName);
+        setUsername(newUsername);
+        setShowProfileModal(false);
+      } else {
+        const errorData = await res.json();
+        alert(errorData.error?.message || "Failed to update profile");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmittingProfile(false);
+    }
+  };
 
   // Handle Login
   const handleLogin = (e: React.FormEvent) => {
@@ -300,7 +365,7 @@ export default function WeeklyPlatform() {
       author: username,
       college: collegeName,
       role: "Participant",
-      avatar: username.split(" ").map(n => n[0]).join("").toUpperCase(),
+      avatar: (username || "?").split(" ").map(n => n?.[0] || "").join("").toUpperCase(),
       rank: "#47",
       title: composerTitle,
       content: composerContent,
@@ -388,7 +453,7 @@ export default function WeeklyPlatform() {
       setIsCompiling(false);
       setVerdict("accepted");
       setConsoleOutput(`▸ Test Case 3: PASSED (0.01s)\n▸ Test Case 4: PASSED (0.03s)\n▸ Test Case 5: PASSED (0.02s)\n\n✓ VERDICT: ACCEPTED (100/100 points)\nELO Streaks updated.`);
-      
+
       const newSub = {
         time: new Date().toLocaleTimeString(),
         verdict: "ACCEPTED",
@@ -412,25 +477,30 @@ export default function WeeklyPlatform() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#070707] text-[#EBE6DD] font-sans selection:bg-[#D4AF37]/30 selection:text-[#FFFFFF] relative overflow-hidden">
-      {/* Background Matrix Grid */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03] z-0" style={{
+    <div className="min-h-screen bg-[#060606] text-[#F3EDE2] font-sans selection:bg-[#D4AF37]/40 selection:text-white relative overflow-hidden">
+      {/* Cinematic background layers */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(212,175,55,0.18),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(75,226,196,0.08),_transparent_28%)] z-0" />
+      <div className="absolute inset-0 pointer-events-none opacity-[0.035] z-0" style={{
         backgroundImage: `
           linear-gradient(to right, #D4AF37 1px, transparent 1px),
           linear-gradient(to bottom, #D4AF37 1px, transparent 1px)
         `,
-        backgroundSize: "45px 45px"
+        backgroundSize: "46px 46px"
+      }} />
+      <div className="absolute inset-0 pointer-events-none opacity-[0.08] z-0" style={{
+        backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.16) 1px, transparent 1px)`,
+        backgroundSize: "18px 18px"
       }} />
 
-      {/* Decorative Gold Radial Glow */}
-      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-[#D4AF37] opacity-[0.03] blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-15%] w-[450px] h-[450px] rounded-full bg-[#D4AF37] opacity-[0.02] blur-[120px] pointer-events-none" />
+      {/* Decorative glows */}
+      <div className="absolute top-[-12%] right-[-10%] w-[520px] h-[520px] rounded-full bg-[#D4AF37] opacity-[0.045] blur-[160px] pointer-events-none" />
+      <div className="absolute bottom-[-12%] left-[-16%] w-[460px] h-[460px] rounded-full bg-[#4BE2C4] opacity-[0.03] blur-[140px] pointer-events-none" />
 
-      {!isLoggedIn && !showLoginForm ? (
+      {!isLoggedIn ? (
         /* ==================== COMING SOON SCREEN ==================== */
         <div className="min-h-screen flex flex-col items-center justify-center p-6 relative z-10">
           <div className="w-full max-w-4xl glass border border-[#D4AF37]/20 bg-[#0E0E0E]/90 p-8 md:p-12 rounded-xl relative shadow-2xl overflow-hidden flex flex-col items-center text-center">
-            
+
             {/* Corner Decorative Borders */}
             <div className="absolute top-0 left-0 w-8 h-[1px] bg-[#D4AF37]" />
             <div className="absolute top-0 left-0 w-[1px] h-8 bg-[#D4AF37]" />
@@ -444,7 +514,7 @@ export default function WeeklyPlatform() {
             <h1 className="font-serif text-4xl md:text-6xl text-[#FFFFFF] tracking-wider uppercase mb-3 leading-tight">
               WEEKLY CHALLENGES <span className="text-[#D4AF37]">2026</span>
             </h1>
-            
+
             <p className="font-mono text-xs md:text-sm text-[#8A8880] uppercase tracking-[0.2em] max-w-2xl mb-8">
               8 Weeks. 40+ Tactical DSA Combat Missions. The Ultimate Arena of Competitive Programming.
             </p>
@@ -490,7 +560,7 @@ export default function WeeklyPlatform() {
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 w-full justify-center max-w-md">
               <button
-                onClick={() => setShowLoginForm(true)}
+                onClick={() => window.location.assign('/login')}
                 className="flex-1 border border-[#D4AF37] bg-[#D4AF37]/5 hover:bg-[#D4AF37] hover:text-[#0A0A0A] text-[#D4AF37] font-mono text-xs font-bold tracking-[0.2em] uppercase py-4 px-6 rounded transition-all flex items-center justify-center gap-3 shadow-[0_0_15px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] group"
               >
                 CONNECT SHELL <Terminal size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -504,97 +574,98 @@ export default function WeeklyPlatform() {
             </div>
           </div>
         </div>
-      ) : !isLoggedIn && showLoginForm ? (
-        /* ==================== LOGIN SCREEN ==================== */
-        <div className="min-h-screen flex items-center justify-center p-6 relative z-10">
-          <div className="w-full max-w-lg glass border border-[#D4AF37]/20 bg-[#0E0E0E]/90 p-8 rounded-xl relative shadow-2xl overflow-hidden">
-            {/* Corner Decorative Borders */}
-            <div className="absolute top-0 left-0 w-8 h-[1px] bg-[#D4AF37]" />
-            <div className="absolute top-0 left-0 w-[1px] h-8 bg-[#D4AF37]" />
-            <div className="absolute bottom-0 right-0 w-8 h-[1px] bg-[#D4AF37]" />
-            <div className="absolute bottom-0 right-0 w-[1px] h-8 bg-[#D4AF37]" />
+      ) : showProfileModal ? (
+        /* ==================== PROFILE COMPLETION FORM ==================== */
+        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center z-10 relative px-6">
+          <motion.div 
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="w-full max-w-md border border-[#D4AF37]/30 bg-[#0A0A0A] p-8 shadow-2xl relative"
+          >
+            <div className="absolute top-0 left-0 w-4 h-[1px] bg-[#D4AF37]" />
+            <div className="absolute top-0 left-0 w-[1px] h-4 bg-[#D4AF37]" />
+            <div className="absolute bottom-0 right-0 w-4 h-[1px] bg-[#D4AF37]" />
+            <div className="absolute bottom-0 right-0 w-[1px] h-4 bg-[#D4AF37]" />
 
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1 border border-[#D4AF37]/25 bg-[#D4AF37]/5 text-xs text-[#D4AF37] uppercase tracking-[0.25em] font-bold rounded-full mb-4">
-                <Shield size={12} className="animate-pulse" /> CodeCell Shell v2.0
-              </div>
-              <h1 className="font-serif text-3xl md:text-4xl text-[#FFFFFF] tracking-wider uppercase mb-1">
-                TSEC CodeCell
-              </h1>
-              <p className="font-mono text-xs text-[#D4AF37] uppercase tracking-[0.2em] mb-4">
-                Weekly Challenges 2026
+            <div className="mb-6 border-b border-[#2A2A2A] pb-4">
+              <h2 className="text-2xl font-bold uppercase text-[#F0EDE6] tracking-wider font-serif">
+                COMPLETE PROFILE
+              </h2>
+              <p className="text-[10px] text-[#D4AF37] uppercase tracking-widest font-mono mt-1">
+                REQUIRED FOR RANKING
               </p>
-              <div className="w-24 h-[1.5px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mt-2" />
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-5">
+            <form onSubmit={handleCompleteProfile} className="space-y-5">
               <div>
-                <label className="block font-mono text-[10px] text-[#8A8880] uppercase tracking-widest mb-1.5">// USER_HANDLE</label>
+                <label className="block font-mono text-[10px] text-[#8A8880] uppercase tracking-widest mb-1.5">
+                  // USERNAME
+                </label>
                 <input
                   type="text"
-                  placeholder="e.g. Arjun Rao"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full bg-[#121212] border border-[#2A2A2A] focus:border-[#D4AF37] px-4 py-3 rounded text-sm text-[#FFFFFF] outline-none font-mono tracking-wide shadow-inner transition-colors"
+                  required
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  placeholder="Choose a unique username"
+                  className="w-full bg-transparent border border-[#2A2A2A] focus:border-[#D4AF37] px-4 py-3 rounded text-sm text-[#FFFFFF] outline-none font-mono tracking-wide"
                 />
               </div>
-
               <div>
-                <label className="block font-mono text-[10px] text-[#8A8880] uppercase tracking-widest mb-1.5">// COLLEGE_NAME</label>
+                <label className="block font-mono text-[10px] text-[#8A8880] uppercase tracking-widest mb-1.5">
+                  // COLLEGE NAME
+                </label>
                 <input
                   type="text"
+                  required
+                  value={newCollegeName}
+                  onChange={(e) => setNewCollegeName(e.target.value)}
                   placeholder="e.g. TSEC Mumbai"
-                  value={collegeName}
-                  onChange={(e) => setCollegeName(e.target.value)}
-                  className="w-full bg-[#121212] border border-[#2A2A2A] focus:border-[#D4AF37] px-4 py-3 rounded text-sm text-[#FFFFFF] outline-none font-mono tracking-wide shadow-inner transition-colors"
+                  className="w-full bg-transparent border border-[#2A2A2A] focus:border-[#D4AF37] px-4 py-3 rounded text-sm text-[#FFFFFF] outline-none font-mono tracking-wide"
                 />
               </div>
-
               <div>
-                <label className="block font-mono text-[10px] text-[#8A8880] uppercase tracking-widest mb-1.5">// ACCESS_KEY (OPTIONAL)</label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={passcode}
-                  onChange={(e) => setPasscode(e.target.value)}
-                  className="w-full bg-[#121212] border border-[#2A2A2A] focus:border-[#D4AF37] px-4 py-3 rounded text-sm text-[#FFFFFF] outline-none font-mono tracking-wide shadow-inner transition-colors"
-                />
+                <label className="block font-mono text-[10px] text-[#8A8880] uppercase tracking-widest mb-1.5">
+                  // CURRENT YEAR
+                </label>
+                <select
+                  required
+                  value={newYear}
+                  onChange={(e) => setNewYear(e.target.value)}
+                  className="w-full bg-[#0A0A0A] border border-[#2A2A2A] focus:border-[#D4AF37] px-4 py-3 rounded text-sm text-[#FFFFFF] outline-none font-mono tracking-wide appearance-none"
+                >
+                  <option value="" disabled>Select Year</option>
+                  <option value="FE">First Year (FE)</option>
+                  <option value="SE">Second Year (SE)</option>
+                  <option value="TE">Third Year (TE)</option>
+                  <option value="BE">Fourth Year (BE)</option>
+                </select>
               </div>
-
               <button
                 type="submit"
-                className="w-full border border-[#D4AF37] hover:bg-[#D4AF37]/10 text-[#D4AF37] font-mono text-xs font-bold tracking-[0.2em] uppercase py-4 rounded transition-all flex items-center justify-center gap-3 mt-8 shadow-[0_0_15px_rgba(212,175,55,0.05)] hover:shadow-[0_0_25px_rgba(212,175,55,0.15)] group"
+                disabled={isSubmittingProfile}
+                className="w-full border border-[#D4AF37] hover:bg-[#D4AF37]/10 text-[#D4AF37] font-mono text-xs font-bold tracking-[0.2em] uppercase py-4 rounded transition-all mt-4"
               >
-                CONNECT SHELL <Terminal size={14} className="group-hover:translate-x-1 transition-transform" />
+                {isSubmittingProfile ? "UPDATING..." : "SAVE PROFILE"}
               </button>
             </form>
-
-            <button
-              onClick={() => setShowLoginForm(false)}
-              className="mt-6 w-full text-center font-mono text-[10px] text-[#8A8880] hover:text-[#D4AF37] transition-colors uppercase tracking-widest block"
-            >
-              ← Back to Event Info
-            </button>
-
-            <div className="mt-8 pt-6 border-t border-[#1C1C1C] text-center">
-              <span className="font-mono text-[9px] text-[#555550] tracking-widest uppercase">
-                CODE. COMPETE. CONQUER.
-              </span>
-            </div>
-          </div>
+          </motion.div>
         </div>
       ) : (
         /* ==================== MAIN APPLICATION SHELL ==================== */
         <div className="min-h-screen flex flex-col z-10 relative">
-          
+
           {/* TOP NAVIGATION HEADER */}
-          <header className="sticky top-0 z-40 w-full bg-[#0A0A0A]/95 border-b border-[#D4AF37]/15 backdrop-blur-md">
-            <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-6">
-              
-              {/* Logo / Title */}
+          <header className="sticky top-0 z-40 w-full border-b border-[#D4AF37]/20 bg-[#060606]/85 backdrop-blur-2xl shadow-[0_0_35px_rgba(0,0,0,0.35)]">
+            <div className="max-w-7xl mx-auto flex h-20 items-center justify-between px-6">
               <div className="flex items-center gap-3">
-                <span className="text-2xl text-[#D4AF37]">♛</span>
+                <div className="flex h-11 w-11 items-center justify-center rounded-full border border-[#D4AF37]/30 bg-gradient-to-br from-[#D4AF37]/20 to-[#F5E6A3]/10 text-xl text-[#D4AF37] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+                  ♛
+                </div>
                 <div>
+                  <div className="inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/20 bg-[#D4AF37]/10 px-2.5 py-1 text-[9px] font-mono uppercase tracking-[0.25em] text-[#D4AF37] mb-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#10B981] animate-pulse" /> live arena
+                  </div>
                   <span className="font-serif text-sm tracking-wider font-bold text-[#FFFFFF] block uppercase">
                     TSEC CODECELL
                   </span>
@@ -604,21 +675,29 @@ export default function WeeklyPlatform() {
                 </div>
               </div>
 
-              {/* Desktop User Info Panel */}
-              <div className="hidden md:flex items-center gap-4">
-                <div className="text-right">
-                  <span className="font-mono text-[10px] text-[#D4AF37] block uppercase">// ACTIVE_SESSION</span>
+              <div className="hidden md:flex items-center gap-3">
+                <div className="rounded-full border border-[#D4AF37]/20 bg-[#0D0D0D] px-3 py-2 text-right shadow-inner">
+                  <span className="font-mono text-[10px] text-[#D4AF37] block uppercase">// active session</span>
                   <span className="text-xs font-semibold text-[#FFFFFF] block">{username}</span>
                 </div>
-                <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-[#D4AF37] to-[#F5E6A3] text-[#0A0A0A] font-bold text-xs flex items-center justify-center border border-[#D4AF37]/30">
-                  {username.split(" ").map(n => n[0]).join("").toUpperCase()}
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-tr from-[#D4AF37] to-[#F5E6A3] text-[#0A0A0A] font-bold text-xs border border-[#D4AF37]/30 shadow-[0_0_18px_rgba(212,175,55,0.2)]">
+                  {(username || "?").split(" ").map(n => n?.[0] || "").join("").toUpperCase()}
                 </div>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem("jwt_token");
+                    localStorage.removeItem("dashboard_isLoggedIn");
+                    window.location.assign("/login");
+                  }}
+                  className="ml-2 flex items-center justify-center rounded-full border border-red-500/30 bg-red-500/10 px-4 py-2 text-[10px] font-mono font-bold uppercase tracking-widest text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors"
+                >
+                  LOGOUT
+                </button>
               </div>
 
-              {/* Mobile Hamburger Trigger */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 hover:bg-[#1C1C1C] rounded border border-[#222] text-[#EBE6DD]"
+                className="md:hidden rounded border border-[#2A2A2A] bg-[#0D0D0D]/80 p-2 text-[#EBE6DD] shadow-inner"
               >
                 {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
               </button>
@@ -627,21 +706,21 @@ export default function WeeklyPlatform() {
 
           {/* MAIN CONTAINER LAYOUT */}
           <div className="flex-1 max-w-7xl w-full mx-auto px-6 py-8 flex flex-col lg:flex-row gap-6">
-            
+
             {/* LEFT SIDEBAR: PROFILE & QUICK NAVIGATION (takes ~20% width) */}
             <aside className={`lg:w-1/5 shrink-0 flex flex-col gap-6 ${mobileMenuOpen ? "block" : "hidden lg:flex"}`}>
               {/* User Profile Card */}
-              <div className="border border-[#D4AF37]/20 bg-[#0E0E0E] p-6 rounded-lg relative overflow-hidden">
-                {/* Visual Chess Indicator Background */}
-                <div className="absolute right-[-20px] bottom-[-20px] text-[#D4AF37]/5 font-serif text-9xl select-none pointer-events-none">
+              <div className="relative overflow-hidden rounded-2xl border border-[#D4AF37]/20 bg-gradient-to-br from-[#0E0E0E] via-[#111111] to-[#080808] p-6 shadow-[0_0_35px_rgba(0,0,0,0.3)]">
+                <div className="absolute right-[-20px] bottom-[-24px] text-[#D4AF37]/8 font-serif text-9xl select-none pointer-events-none">
                   ♞
                 </div>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(212,175,55,0.16),_transparent_32%)]" />
 
-                <span className="font-mono text-[9px] text-[#D4AF37] tracking-widest block mb-4 uppercase">// OPERATIVE_DOSSIER</span>
-                
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="h-10 w-10 rounded bg-[#1C1C1C] border border-[#D4AF37]/30 text-[#D4AF37] flex items-center justify-center font-bold text-sm font-mono shadow-[inset_0_2px_8px_rgba(0,0,0,0.8)]">
-                    {username.split(" ").map(n => n[0]).join("").toUpperCase()}
+                <span className="relative font-mono text-[9px] text-[#D4AF37] tracking-widest block mb-4 uppercase">// operative dossier</span>
+
+                <div className="relative flex items-center gap-3 mb-5">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#D4AF37]/30 bg-[#1C1C1C] text-[#D4AF37] font-bold text-sm font-mono shadow-[inset_0_2px_8px_rgba(0,0,0,0.8)]">
+                    {(username || "?").split(" ").map(n => n?.[0] || "").join("").toUpperCase()}
                   </div>
                   <div>
                     <h3 className="text-sm font-serif font-bold text-[#FFFFFF] truncate max-w-[120px]">{username}</h3>
@@ -649,27 +728,25 @@ export default function WeeklyPlatform() {
                   </div>
                 </div>
 
-                {/* Stats Grid */}
-                <div className="grid grid-cols-2 gap-3 border-t border-[#1C1C1C] pt-4 font-mono">
-                  <div>
-                    <span className="text-[9px] text-[#8A8880] block uppercase tracking-wider">RANK</span>
+                <div className="relative grid grid-cols-2 gap-3 border-t border-[#2A2A2A] pt-4 font-mono">
+                  <div className="rounded-xl border border-[#1F1F1F] bg-[#0A0A0A]/70 p-2.5">
+                    <span className="text-[9px] text-[#8A8880] block uppercase tracking-wider">rank</span>
                     <span className="text-sm text-[#D4AF37] font-bold">#47</span>
                   </div>
-                  <div>
-                    <span className="text-[9px] text-[#8A8880] block uppercase tracking-wider">STREAK</span>
+                  <div className="rounded-xl border border-[#1F1F1F] bg-[#0A0A0A]/70 p-2.5">
+                    <span className="text-[9px] text-[#8A8880] block uppercase tracking-wider">streak</span>
                     <span className="text-sm text-[#10B981] font-bold flex items-center gap-1">
                       <Zap size={10} className="fill-current" /> 4w
                     </span>
                   </div>
-                  <div className="col-span-2 mt-1">
-                    <span className="text-[9px] text-[#8A8880] block uppercase tracking-wider">TRIALS SOLVED</span>
+                  <div className="col-span-2 rounded-xl border border-[#1F1F1F] bg-[#0A0A0A]/70 p-2.5">
+                    <span className="text-[9px] text-[#8A8880] block uppercase tracking-wider">trials solved</span>
                     <span className="text-xs text-[#FFFFFF]">08 / 15</span>
                   </div>
                 </div>
               </div>
 
-              {/* Navigation Menu */}
-              <div className="border border-[#1A1A1A] bg-[#0A0A0A] p-4 rounded-lg">
+              <div className="rounded-2xl border border-[#2A2A2A] bg-[#0A0A0A]/80 p-4 shadow-[0_0_25px_rgba(0,0,0,0.25)]">
                 <span className="font-mono text-[9px] text-[#8A8880] tracking-widest block mb-3 px-2 uppercase">// NAV_SYSTEM</span>
                 <nav className="flex flex-col gap-1 text-sm font-mono">
                   {[
@@ -677,14 +754,13 @@ export default function WeeklyPlatform() {
                     { id: "discussions", label: "Discussions", icon: MessageSquare },
                     { id: "leaderboard", label: "Leaderboard", icon: Trophy },
                     { id: "challenges", label: "Weekly Challenges", icon: Calendar },
-                    { id: "compiler", label: "Practice Arena", icon: Terminal },
                     { id: "submissions", label: "Submissions", icon: History },
                     { id: "announcements", label: "Announcements", icon: Bell },
                     { id: "profile", label: "Profile", icon: User }
                   ].map((item) => {
                     const Icon = item.icon;
                     // Highlight Discussions too since they share dashboard feed focus
-                    const isActive = activePage === item.id || (item.id === "discussions" && activePage === "dashboard");
+                    const isActive = activePage === item.id;
                     return (
                       <button
                         key={item.id}
@@ -692,11 +768,10 @@ export default function WeeklyPlatform() {
                           setActivePage(item.id as PageId);
                           setMobileMenuOpen(false);
                         }}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded transition-all text-left uppercase text-xs tracking-wider ${
-                          isActive
-                            ? "bg-[#D4AF37]/10 border-l-2 border-[#D4AF37] text-[#D4AF37] font-bold"
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left uppercase text-xs tracking-wider ${isActive
+                            ? "bg-[#D4AF37]/12 border-l-2 border-[#D4AF37] text-[#D4AF37] font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
                             : "text-[#8A8880] hover:text-[#FFFFFF] hover:bg-[#121212] border-l-2 border-transparent"
-                        }`}
+                          }`}
                       >
                         <Icon size={14} />
                         {item.label}
@@ -713,7 +788,7 @@ export default function WeeklyPlatform() {
                       setIsLoggedIn(false);
                       setShowLoginForm(false);
                     }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded transition-all text-left uppercase text-xs tracking-wider text-red-500 hover:text-red-400 hover:bg-red-950/20 border-l-2 border-transparent mt-2 font-mono"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left uppercase text-xs tracking-wider text-red-500 hover:text-red-400 hover:bg-red-950/20 border-l-2 border-transparent mt-2 font-mono"
                   >
                     <Lock size={14} />
                     Disconnect
@@ -724,7 +799,7 @@ export default function WeeklyPlatform() {
 
             {/* MAIN CONTENT AREA: CENTER FEED / DYNAMIC PAGE VIEWS (takes ~65-70% width) */}
             <main className="flex-1 min-w-0 flex flex-col gap-6 relative z-10">
-              
+
               <AnimatePresence mode="wait">
                 {activePage === "dashboard" && (
                   /* ==================== 1. DASHBOARD / DISCUSSIONS ==================== */
@@ -735,17 +810,37 @@ export default function WeeklyPlatform() {
                     exit={{ opacity: 0, y: -15 }}
                     className="flex flex-col gap-6"
                   >
-                    {/* Post Composer Panel */}
-                    <div className="border border-[#1A1A1A] bg-[#0E0E0E] p-6 rounded-lg shadow-xl relative">
-                      <span className="font-mono text-[9px] text-[#D4AF37] tracking-widest block mb-4 uppercase">// CREATE_DISCUSSION</span>
-                      <div className="flex items-start gap-4">
-                        <div className="h-8 w-8 rounded bg-[#1C1C1C] border border-[#222] text-[#D4AF37] flex items-center justify-center font-bold text-xs shrink-0">
-                          {username.split(" ").map(n => n[0]).join("").toUpperCase()}
+                    <div className="relative overflow-hidden rounded-2xl border border-[#D4AF37]/20 bg-gradient-to-br from-[#101010] via-[#121212] to-[#080808] p-6 shadow-[0_0_40px_rgba(0,0,0,0.35)]">
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(212,175,55,0.16),_transparent_30%)]" />
+                      <div className="relative mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                        <div>
+                          <span className="font-mono text-[9px] text-[#D4AF37] tracking-[0.3em] block mb-2 uppercase">// command center</span>
+                          <h2 className="font-serif text-xl text-[#FFFFFF] tracking-wider uppercase">Signal board</h2>
+                          <p className="mt-1 max-w-2xl text-xs text-[#8A8880]">
+                            Share insights, coordinate strategies, and keep the team moving through the current week.
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {[
+                            { label: "Live forum", value: "12 threads" },
+                            { label: "Your streak", value: "4 weeks" },
+                            { label: "Next trial", value: "Week 4" }
+                          ].map((item) => (
+                            <div key={item.label} className="rounded-full border border-[#2A2A2A] bg-[#0A0A0A]/80 px-3 py-1.5 text-[10px] font-mono text-[#8A8880]">
+                              <span className="text-[#D4AF37]">{item.label}:</span> {item.value}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="relative flex items-start gap-4">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#D4AF37]/30 bg-[#1C1C1C] text-[#D4AF37] font-bold text-xs shrink-0">
+                          {(username || "?").split(" ").map(n => n?.[0] || "").join("").toUpperCase()}
                         </div>
                         <div className="flex-1">
                           <button
                             onClick={() => setShowNewPostForm(true)}
-                            className="w-full text-left bg-[#121212] hover:bg-[#1A1A1A] border border-[#2A2A2A] hover:border-[#D4AF37]/40 px-4 py-3 rounded text-xs text-[#8A8880] transition-all cursor-pointer font-mono"
+                            className="w-full text-left rounded-xl border border-[#2A2A2A] bg-[#0D0D0D]/90 px-4 py-3 text-xs text-[#8A8880] transition-all cursor-pointer font-mono shadow-inner hover:border-[#D4AF37]/35 hover:bg-[#121212]"
                           >
                             Start a discussion, ask a doubt, or share your approach...
                           </button>
@@ -824,7 +919,7 @@ export default function WeeklyPlatform() {
                         return (
                           <div
                             key={post.id}
-                            className="border border-[#1A1A1A] hover:border-[#D4AF37]/35 bg-[#0E0E0E] p-6 rounded-lg relative transition-all duration-300 shadow-lg"
+                            className="relative rounded-2xl border border-[#2A2A2A] bg-gradient-to-br from-[#101010] via-[#0F0F0F] to-[#090909] p-6 shadow-[0_0_30px_rgba(0,0,0,0.28)] transition-all duration-300 hover:-translate-y-1 hover:border-[#D4AF37]/35 hover:shadow-[0_0_35px_rgba(212,175,55,0.12)]"
                           >
                             {/* Header details */}
                             <div className="flex items-center justify-between mb-4">
@@ -854,9 +949,7 @@ export default function WeeklyPlatform() {
                             <h3 className="font-serif text-base text-[#FFFFFF] font-bold tracking-wide mb-2 uppercase hover:text-[#D4AF37] transition-colors cursor-pointer">
                               {post.title}
                             </h3>
-                            <p className="text-xs text-[#8A8880] leading-relaxed mb-4 whitespace-pre-line font-sans">
-                              {post.content}
-                            </p>
+                            <MarkdownRenderer content={post.content} className="text-xs text-[#8A8880] leading-relaxed mb-4 font-sans" />
 
                             {/* Tags */}
                             <div className="flex flex-wrap gap-2 mb-5">
@@ -910,7 +1003,7 @@ export default function WeeklyPlatform() {
                                       <span className="font-bold">{comment.author}</span>
                                       <span className="text-[#4A4A4A]">{comment.time}</span>
                                     </div>
-                                    <p className="text-xs text-[#8A8880] leading-relaxed font-sans">{comment.content}</p>
+                                    <MarkdownRenderer content={comment.content} className="text-xs text-[#8A8880] leading-relaxed font-sans" />
                                   </div>
                                 ))}
                               </div>
@@ -954,7 +1047,7 @@ export default function WeeklyPlatform() {
                     <div className="border border-[#D4AF37]/20 bg-[#0E0E0E] p-6 rounded-lg text-center relative overflow-hidden">
                       <div className="absolute top-0 left-0 w-24 h-[1px] bg-gradient-to-r from-[#D4AF37] to-transparent" />
                       <div className="absolute top-0 left-0 w-[1px] h-24 bg-gradient-to-b from-[#D4AF37] to-transparent" />
-                      
+
                       <span className="font-mono text-[9px] text-[#D4AF37] tracking-[0.3em] block mb-2 uppercase">// GLOBAL_RANKS</span>
                       <h1 className="font-serif text-3xl text-[#FFFFFF] tracking-wider uppercase mb-1">
                         Operative Leaderboard
@@ -966,22 +1059,20 @@ export default function WeeklyPlatform() {
 
                     {/* Filter Strip */}
                     <div className="border border-[#1A1A1A] bg-[#0A0A0A] p-4 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4 font-mono text-xs">
-                      
+
                       {/* Overall/Weekly Tab Toggle */}
                       <div className="flex border border-[#1A1A1A]">
                         <button
                           onClick={() => setLeaderboardTab("overall")}
-                          className={`px-4 py-2 transition-colors uppercase ${
-                            leaderboardTab === "overall" ? "bg-[#D4AF37] text-[#0A0A0A] font-bold" : "text-[#8A8880] hover:text-[#FFFFFF]"
-                          }`}
+                          className={`px-4 py-2 transition-colors uppercase ${leaderboardTab === "overall" ? "bg-[#D4AF37] text-[#0A0A0A] font-bold" : "text-[#8A8880] hover:text-[#FFFFFF]"
+                            }`}
                         >
                           Overall Season
                         </button>
                         <button
                           onClick={() => setLeaderboardTab("weekly")}
-                          className={`px-4 py-2 transition-colors uppercase ${
-                            leaderboardTab === "weekly" ? "bg-[#D4AF37] text-[#0A0A0A] font-bold" : "text-[#8A8880] hover:text-[#FFFFFF]"
-                          }`}
+                          className={`px-4 py-2 transition-colors uppercase ${leaderboardTab === "weekly" ? "bg-[#D4AF37] text-[#0A0A0A] font-bold" : "text-[#8A8880] hover:text-[#FFFFFF]"
+                            }`}
                         >
                           Week 4 Live
                         </button>
@@ -1018,7 +1109,7 @@ export default function WeeklyPlatform() {
 
                     {/* TOP 3 PODIUM DESIGN */}
                     <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto w-full py-8 items-end text-center select-none">
-                      
+
                       {/* Rank 2 (Left) */}
                       <div className="flex flex-col items-center">
                         <div className="h-14 w-14 rounded-full bg-[#1C1C1C] border-2 border-slate-400 text-slate-400 font-bold text-sm flex items-center justify-center font-mono mb-2 relative shadow-lg">
@@ -1027,7 +1118,7 @@ export default function WeeklyPlatform() {
                         </div>
                         <h4 className="text-xs font-serif font-bold text-[#FFFFFF] truncate max-w-[90px]">Rohan Chawla</h4>
                         <p className="text-[9px] text-[#8A8880] truncate max-w-[90px]">VJTI Mumbai</p>
-                        
+
                         <div className="w-full bg-slate-400/10 border-t border-slate-400/30 h-24 mt-3 rounded-t-lg flex flex-col justify-center p-3 relative overflow-hidden">
                           <span className="font-mono text-xs text-[#FFFFFF]">2740 PTS</span>
                           <span className="font-mono text-[9px] text-slate-400 tracking-wider">MASTER</span>
@@ -1043,7 +1134,7 @@ export default function WeeklyPlatform() {
                         </div>
                         <h4 className="text-sm font-serif font-bold text-[#D4AF37] truncate max-w-[100px]">Ayush Mehrotra</h4>
                         <p className="text-[10px] text-[#8A8880] truncate max-w-[100px]">IIT Bombay</p>
-                        
+
                         <div className="w-full bg-[#D4AF37]/10 border-t-2 border-[#D4AF37] h-32 mt-3 rounded-t-lg flex flex-col justify-center p-3 relative overflow-hidden shadow-2xl">
                           <span className="font-mono text-sm text-[#FFFFFF] font-bold">2850 PTS</span>
                           <span className="font-mono text-[9px] text-[#D4AF37] tracking-widest font-black uppercase">GRANDMASTER</span>
@@ -1058,7 +1149,7 @@ export default function WeeklyPlatform() {
                         </div>
                         <h4 className="text-xs font-serif font-bold text-[#FFFFFF] truncate max-w-[90px]">Sneha Kulkarni</h4>
                         <p className="text-[9px] text-[#8A8880] truncate max-w-[90px]">COEP Pune</p>
-                        
+
                         <div className="w-full bg-amber-600/10 border-t border-amber-600/30 h-20 mt-3 rounded-t-lg flex flex-col justify-center p-3 relative overflow-hidden">
                           <span className="font-mono text-xs text-[#FFFFFF]">2610 PTS</span>
                           <span className="font-mono text-[9px] text-amber-600 tracking-wider">MASTER</span>
@@ -1089,7 +1180,7 @@ export default function WeeklyPlatform() {
                             .map((user) => {
                               const isMe = user.name === "You";
                               const rankDisplay = leaderboardTab === "overall" ? user.rank : user.weeklyRank;
-                              
+
                               let badgeColor = "border-[#333] text-[#8A8880]";
                               if (user.badge === "Grandmaster") badgeColor = "border-[#D4AF37]/45 text-[#D4AF37] bg-[#D4AF37]/5";
                               else if (user.badge === "Master") badgeColor = "border-slate-400 text-slate-300";
@@ -1097,9 +1188,8 @@ export default function WeeklyPlatform() {
                               return (
                                 <tr
                                   key={user.rank}
-                                  className={`hover:bg-[#121212] transition-colors ${
-                                    isMe ? "bg-[#D4AF37]/5 font-bold border-l-2 border-l-[#D4AF37]" : ""
-                                  }`}
+                                  className={`hover:bg-[#121212] transition-colors ${isMe ? "bg-[#D4AF37]/5 font-bold border-l-2 border-l-[#D4AF37]" : ""
+                                    }`}
                                 >
                                   {/* Rank Column */}
                                   <td className="py-4 px-6 flex items-center gap-2">
@@ -1164,7 +1254,7 @@ export default function WeeklyPlatform() {
                     <div className="border border-[#D4AF37]/20 bg-[#0E0E0E] p-6 rounded-lg text-center relative overflow-hidden">
                       <div className="absolute bottom-0 right-0 w-24 h-[1px] bg-gradient-to-l from-[#D4AF37] to-transparent" />
                       <div className="absolute bottom-0 right-0 w-[1px] h-24 bg-gradient-to-t from-[#D4AF37] to-transparent" />
-                      
+
                       <span className="font-mono text-[9px] text-[#D4AF37] tracking-[0.3em] block mb-2 uppercase">// TIMELINE_COORDINATES</span>
                       <h1 className="font-serif text-3xl text-[#FFFFFF] tracking-wider uppercase mb-1">
                         8 Weeks · 8 Queens
@@ -1229,15 +1319,13 @@ export default function WeeklyPlatform() {
                               ) : (
                                 <button
                                   onClick={() => {
-                                    // Enter challenge simulator
                                     setActiveProblem(COMPILER_PROBLEMS[0]);
-                                    setActivePage("compiler");
+                                    setActivePage("dashboard");
                                   }}
-                                  className={`px-4 py-2 border uppercase tracking-widest text-[9px] font-bold rounded transition-all flex items-center gap-1 ${
-                                    isLive
+                                  className={`px-4 py-2 border uppercase tracking-widest text-[9px] font-bold rounded transition-all flex items-center gap-1 ${isLive
                                       ? "border-[#D4AF37] bg-[#D4AF37]/10 hover:bg-[#D4AF37] hover:text-[#0A0A0A] text-[#D4AF37]"
                                       : "border-[#8A8880]/30 hover:border-[#8A8880] text-[#8A8880] hover:text-[#FFFFFF]"
-                                  }`}
+                                    }`}
                                 >
                                   Enter Challenge <ChevronRight size={10} />
                                 </button>
@@ -1273,11 +1361,10 @@ export default function WeeklyPlatform() {
                                 setVerdict("idle");
                                 setConsoleOutput("▸ Console ready. Click 'Run Code' to execute templates.");
                               }}
-                              className={`px-3 py-1 border rounded text-[10px] font-bold uppercase transition-all ${
-                                activeProblem.id === prob.id
+                              className={`px-3 py-1 border rounded text-[10px] font-bold uppercase transition-all ${activeProblem.id === prob.id
                                   ? "border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37]"
                                   : "border-[#222] text-[#8A8880] hover:text-[#FFFFFF]"
-                              }`}
+                                }`}
                             >
                               {prob.title} ({prob.difficulty})
                             </button>
@@ -1303,7 +1390,7 @@ export default function WeeklyPlatform() {
 
                     {/* Split View Compiler Layout */}
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch min-h-[500px]">
-                      
+
                       {/* Left: Problem Description (takes 5 cols) */}
                       <div className="lg:col-span-5 border border-[#1A1A1A] bg-[#0E0E0E] p-6 rounded-lg flex flex-col justify-between overflow-y-auto max-h-[620px] custom-scrollbar">
                         <div>
@@ -1315,34 +1402,39 @@ export default function WeeklyPlatform() {
                               </h2>
                               <p className="font-mono text-[9px] text-[#8A8880] tracking-widest mt-0.5">TRIAL_0{activeProblem.id === "q2" ? "4" : "3"}</p>
                             </div>
-                            <span className={`font-mono text-[9px] border px-2 py-0.5 uppercase tracking-wider rounded ${
-                              activeProblem.difficulty === "Hard"
+                            <span className={`font-mono text-[9px] border px-2 py-0.5 uppercase tracking-wider rounded ${activeProblem.difficulty === "Hard"
                                 ? "border-[#FF3333]/30 text-[#FF3333] bg-[#FF3333]/5"
                                 : "border-[#D4AF37]/30 text-[#D4AF37] bg-[#D4AF37]/5"
-                            }`}>
+                              }`}>
                               {activeProblem.difficulty}
                             </span>
                           </div>
 
                           {/* Description */}
                           <div className="space-y-4 text-xs leading-relaxed text-[#8A8880] font-sans">
-                            <p className="text-[#FFFFFF]">{activeProblem.desc}</p>
-                            
+                            <MarkdownRenderer content={activeProblem.desc} className="text-[#FFFFFF]" />
+
                             <div>
                               <h4 className="font-mono text-[10px] text-[#D4AF37] uppercase tracking-widest mb-1">// INPUT_FORMAT</h4>
-                              <p className="bg-[#070707] border border-[#1C1C1C] p-2.5 font-mono text-[10px] rounded">{activeProblem.inputFormat}</p>
+                              <div className="bg-[#070707] border border-[#1C1C1C] p-2.5 rounded">
+                                <MarkdownRenderer content={activeProblem.inputFormat} className="font-mono text-[10px]" />
+                              </div>
                             </div>
 
                             <div>
                               <h4 className="font-mono text-[10px] text-[#D4AF37] uppercase tracking-widest mb-1">// OUTPUT_FORMAT</h4>
-                              <p className="bg-[#070707] border border-[#1C1C1C] p-2.5 font-mono text-[10px] rounded">{activeProblem.outputFormat}</p>
+                              <div className="bg-[#070707] border border-[#1C1C1C] p-2.5 rounded">
+                                <MarkdownRenderer content={activeProblem.outputFormat} className="font-mono text-[10px]" />
+                              </div>
                             </div>
 
                             <div>
                               <h4 className="font-mono text-[10px] text-[#D4AF37] uppercase tracking-widest mb-1">// CONSTRAINTS</h4>
                               <ul className="list-disc list-inside space-y-1 font-mono text-[10px]">
                                 {activeProblem.constraints.map((c, i) => (
-                                  <li key={i}>{c}</li>
+                                  <li key={i} className="list-item">
+                                    <MarkdownRenderer content={c} className="inline-block" />
+                                  </li>
                                 ))}
                               </ul>
                             </div>
@@ -1353,7 +1445,7 @@ export default function WeeklyPlatform() {
                                 <div>Input: <span className="text-[#D4AF37]">{activeProblem.sampleInput}</span></div>
                                 <div>Output: <span className="text-[#10B981]">{activeProblem.sampleOutput}</span></div>
                               </div>
-                              <p className="text-[10px] mt-2 italic text-[#555550]">{activeProblem.explanation}</p>
+                              <MarkdownRenderer content={activeProblem.explanation} className="text-[10px] mt-2 italic text-[#555550]" />
                             </div>
                           </div>
                         </div>
@@ -1590,17 +1682,17 @@ export default function WeeklyPlatform() {
 
             {/* RIGHT SIDEBAR: AD SPONSOR PANEL (takes ~12-15% width) */}
             <aside className="lg:w-[13%] shrink-0 flex flex-col gap-6">
-              
+
               {/* Sponsor Module Wrapper */}
               <div className="border border-[#D4AF37]/20 bg-[#0E0E0E]/90 p-4 rounded-lg relative overflow-hidden flex flex-col h-full min-h-[480px] shadow-2xl justify-between">
-                
+
                 {/* Visual Chess Grid Header decoration */}
                 <div className="absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
-                
+
                 <div className="mb-4">
                   <span className="font-mono text-[9px] text-[#8A8880] tracking-[0.25em] block text-center uppercase mb-3">// SPONSORS</span>
                   <div className="w-full h-[1px] bg-[#1C1C1C] mb-4" />
-                  
+
                   {/* Title Sponsor Placeholder */}
                   <div className="border border-[#D4AF37]/30 bg-[#070707] p-2.5 rounded text-center relative mb-4">
                     <span className="font-mono text-[7px] text-[#D4AF37] tracking-widest uppercase block mb-1">TITLE SPONSOR</span>
@@ -1611,7 +1703,7 @@ export default function WeeklyPlatform() {
                   {/* PLATINUM SPONSORS - Rotator Ad Panel */}
                   <div className="border border-[#1A1A1A] bg-[#0A0A0A] p-3 rounded flex flex-col justify-between min-h-[160px] relative overflow-hidden group">
                     <span className="font-mono text-[7px] text-[#8A8880] tracking-widest uppercase block mb-1">PLATINUM PARTNER</span>
-                    
+
                     {/* Rotating Ad Banner animation wrapper */}
                     <div className="flex-1 flex flex-col justify-center my-2 select-none">
                       <h4 className="font-serif text-[13px] font-bold text-[#D4AF37] uppercase tracking-wide leading-tight mb-1">
@@ -1636,7 +1728,7 @@ export default function WeeklyPlatform() {
                 {/* Additional Tiers Grid */}
                 <div className="space-y-3 pt-4 border-t border-[#1C1C1C] mt-auto">
                   <span className="font-mono text-[7px] text-[#4A4A4A] tracking-wider block text-center uppercase">// PLATINUM & GOLD</span>
-                  
+
                   {/* Mindflix Holiday card */}
                   <div className="border border-[#1A1A1A] bg-[#070707] p-2.5 rounded text-center group hover:border-[#D4AF37]/30 transition-colors">
                     <div className="font-serif text-[10px] text-[#FFFFFF] font-bold uppercase tracking-wide group-hover:text-[#D4AF37]">Mindflix</div>
