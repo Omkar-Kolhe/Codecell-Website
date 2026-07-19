@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { Shield, ArrowLeft } from "lucide-react";
+import { BASE_URL } from "@/lib/api-client";
 
 export default function LoginPage() {
   useEffect(() => {
@@ -43,7 +44,7 @@ export default function LoginPage() {
             <span className="uppercase">OAUTH_V2</span>
           </div>
           <button
-            onClick={() => window.location.href = "http://localhost:8080/oauth/google/login"}
+            onClick={() => window.location.href = `${BASE_URL}/oauth/google/login`}
             className="
               w-full 
               bg-white text-black 

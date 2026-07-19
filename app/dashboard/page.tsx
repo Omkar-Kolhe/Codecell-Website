@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { BASE_URL } from "@/lib/api-client";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -270,7 +271,7 @@ export default function WeeklyPlatform() {
       setIsLoggedIn(true);
       
       // Fetch real profile from backend
-      fetch("http://localhost:8080/profile", {
+      fetch(`${BASE_URL}/profile`, {
         credentials: "include"
       })
       .then(res => res.json())
@@ -302,7 +303,7 @@ export default function WeeklyPlatform() {
     
     setIsSubmittingProfile(true);
     try {
-      const res = await fetch("http://localhost:8080/profile/complete", {
+      const res = await fetch(`${BASE_URL}/profile/complete`, {
         method: "POST",
         credentials: "include",
         headers: { 
@@ -681,7 +682,7 @@ export default function WeeklyPlatform() {
                 </div>
                 <button
                   onClick={() => {
-                    window.location.href = "http://localhost:8080/oauth/logout";
+                    window.location.href = `${BASE_URL}/oauth/logout`;
                   }}
                   className="ml-2 flex items-center justify-center rounded-full border border-red-500/30 bg-red-500/10 px-4 py-2 text-[10px] font-mono font-bold uppercase tracking-widest text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors"
                 >
