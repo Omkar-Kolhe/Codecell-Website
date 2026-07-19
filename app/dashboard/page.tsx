@@ -266,36 +266,33 @@ export default function WeeklyPlatform() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem("jwt_token");
+      // Middleware ensures we are only here if authenticated via cookie
+      setIsLoggedIn(true);
       
-      if (token) {
-        setIsLoggedIn(true);
+      // Fetch real profile from backend
+      fetch("http://localhost:8080/profile", {
+        credentials: "include"
+      })
+      .then(res => res.json())
+      .then(resBody => {
+        if (!resBody.success) {
+          console.error("Profile fetch failed", resBody);
+          return;
+        }
+        const data = resBody.data;
         
-        // Fetch real profile from backend
-        fetch("http://localhost:8080/profile", {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-        .then(res => res.json())
-        .then(resBody => {
-          if (!resBody.success) {
-            console.error("Profile fetch failed", resBody);
-            return;
-          }
-          const data = resBody.data;
-          
-          if (data.username) {
-            setUsername(data.username);
-            setNewUsername(data.username);
-          }
-          if (data.college_name) setCollegeName(data.college_name);
-          
-          // Check if profile is incomplete
-          if (!data.college_name || !data.year) {
-            setShowProfileModal(true);
-          }
-        })
-        .catch(err => console.error("Failed to fetch profile:", err));
-      }
+        if (data.username) {
+          setUsername(data.username);
+          setNewUsername(data.username);
+        }
+        if (data.college_name) setCollegeName(data.college_name);
+        
+        // Check if profile is incomplete
+        if (!data.college_name || !data.year) {
+          setShowProfileModal(true);
+        }
+      })
+      .catch(err => console.error("Failed to fetch profile:", err));
     }
   }, []);
 
@@ -305,12 +302,11 @@ export default function WeeklyPlatform() {
     
     setIsSubmittingProfile(true);
     try {
-      const token = localStorage.getItem("jwt_token");
       const res = await fetch("http://localhost:8080/profile/complete", {
         method: "POST",
+        credentials: "include",
         headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` 
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           username: newUsername,
@@ -685,9 +681,7 @@ export default function WeeklyPlatform() {
                 </div>
                 <button
                   onClick={() => {
-                    localStorage.removeItem("jwt_token");
-                    localStorage.removeItem("dashboard_isLoggedIn");
-                    window.location.assign("/login");
+                    window.location.href = "http://localhost:8080/oauth/logout";
                   }}
                   className="ml-2 flex items-center justify-center rounded-full border border-red-500/30 bg-red-500/10 px-4 py-2 text-[10px] font-mono font-bold uppercase tracking-widest text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors"
                 >
