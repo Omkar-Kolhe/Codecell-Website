@@ -7,33 +7,8 @@ import * as THREE from "three";
 import { ChessPiece } from "./ChessPiece";
 import { MotionValue, useMotionValueEvent } from "framer-motion";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Week } from "@/lib/api-client";
 
-const PIECE_META = [
-  { piece: "♙", rank: "Pawn", difficulty: "Easy" },
-  { piece: "♘", rank: "Knight", difficulty: "Easy/Medium" },
-  { piece: "♗", rank: "Bishop", difficulty: "Medium" },
-  { piece: "♖", rank: "Rook", difficulty: "Medium" },
-  { piece: "♕", rank: "Queen", difficulty: "Hard" },
-  { piece: "♖", rank: "Castle", difficulty: "Hard" },
-  { piece: "♔", rank: "King", difficulty: "Expert" },
-  { piece: "♛", rank: "Grandmaster", difficulty: "Master" },
-];
-
-// Fallback theme/desc text used for any stage without a matching backend week
-// (e.g. weeks haven't been created yet, or fewer than 8 exist).
-const FALLBACK_TEXT = [
-  { theme: "The Opening", desc: "" },
-  { theme: "Knight's Tour", desc: "" },
-  { theme: "Bishop's Diagonal", desc: "" },
-  { theme: "Rook's File", desc: "" },
-  { theme: "Queen's Gambit", desc: "" },
-  { theme: "Castle Defense", desc: "" },
-  { theme: "Checkmate Strategy", desc: "" },
-  { theme: "Grandmaster", desc: "" },
-];
-
-interface TimelineEntry {
+export interface Week {
   week: number;
   theme: string;
   piece: string;
@@ -42,22 +17,84 @@ interface TimelineEntry {
   difficulty: string;
 }
 
-// Merges live backend weeks (assumed pre-sorted by week_number) with the
-// static piece/rank/difficulty visuals, positionally by index (stage 0-7).
-function buildTimelineData(weeksData?: Week[]): TimelineEntry[] {
-  return PIECE_META.map((meta, i) => {
-    const apiWeek = weeksData?.[i];
-    const fallback = FALLBACK_TEXT[i];
-    return {
-      week: apiWeek?.week_number ?? i + 1,
-      theme: apiWeek?.theme || apiWeek?.chapter_name || fallback.theme,
-      desc: apiWeek?.description || fallback.desc,
-      piece: meta.piece,
-      rank: meta.rank,
-      difficulty: meta.difficulty,
-    };
-  });
+export type TimelineEntry = Week;
+
+export function buildTimelineData(weeksData?: Week[]): TimelineEntry[] {
+  if (weeksData && weeksData.length > 0) {
+    return weeksData;
+  }
+  return TIMELINE_DATA;
 }
+
+export const TIMELINE_DATA: TimelineEntry[] = [
+  // ROUND 1: Building the Foundation
+  { 
+    week: 1, 
+    theme: "The Opening", 
+    piece: "♙", 
+    rank: "Pawn", 
+    desc: "Every grandmaster started with a single step. Secure your first syntax wins and set the board for an epic journey ahead!", 
+    difficulty: "Easy/medium" 
+  },
+  { 
+    week: 2, 
+    theme: "Knight's Tour", 
+    piece: "♘", 
+    rank: "Knight", 
+    desc: "Time to think outside the straight lines! Master unpredictable control flows and hop over logic obstacles with agility.", 
+    difficulty: "Easy/Medium" 
+  },
+  { 
+    week: 3, 
+    theme: "Bishop's Diagonal", 
+    piece: "♗", 
+    rank: "Bishop", 
+    desc: "Slice through complexity. Slice your data structures cleanly and run algorithms that span the full length of the board.", 
+    difficulty: "Medium/Hard" 
+  },
+  { 
+    week: 4, 
+    theme: "Rook's File", 
+    piece: "♖", 
+    rank: "Rook", 
+    desc: "Build unshakeable, linear strength. Lock down your file inputs, data streams, and structural logic with absolute precision.", 
+    difficulty: "Medium/Hard" 
+  },
+  { 
+    week: 5, 
+    theme: "Queen's Gambit", 
+    piece: "♕", 
+    rank: "Queen", 
+    desc: "The ultimate test of versatility. Command competetive programming strategies to dominate the arena.", 
+    difficulty: "Medium/Hard" 
+  },
+  { 
+    week: 6, 
+    theme: "Castle Defense", 
+    piece: "♖", 
+    rank: "Castle", 
+    desc: "The final stand of Round 1. Secure your perimeter by optimization, debugging, and proving your code is entirely bulletproof.", 
+    difficulty: "Hard" 
+  },
+
+  // ROUND 2: The Championship Arena
+  { 
+    week: 7, 
+    theme: "Checkmate Strategy", 
+    piece: "♔", 
+    rank: "King", 
+    desc: "Welcome to Round 2! The endgame is here—design elite, high-level system architectures where every single line of code counts.", 
+    difficulty: "Expert" 
+  },
+  { 
+    week: 8, 
+    theme: "Grandmaster", 
+    piece: "♛", 
+    rank: "Grandmaster", 
+    desc: "The pinnacle of the tournament. Onsite at TSEC Bandra campus, outwit the final challenge, and claim the crown!", 
+    difficulty: "Master" 
+  }
+];
 
 function StandardBoard() {
   return (

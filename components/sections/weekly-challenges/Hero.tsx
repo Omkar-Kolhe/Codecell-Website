@@ -120,7 +120,7 @@ export function Hero() {
         >
           <span className="text-[#4ADE80]">function</span>
           <span className="text-white ml-2">masterDSA</span>
-          <span className="text-[#A39A80] ml-2">(8_weeks, n_queens )</span>
+          <span className="text-[#A39A80] ml-2">(6_weeks)</span>
           <span className="inline-block w-2 h-4 ml-3 bg-[#4ADE80] animate-pulse" />
         </motion.div>
 
@@ -131,13 +131,10 @@ export function Hero() {
           transition={{ duration: 1, delay: 0.6 }}
           className="relative mt-14 text-[#8A8A8A] text-[10px] md:text-xs tracking-[0.25em] font-mono flex flex-wrap justify-center items-center gap-x-6 gap-y-2 pb-6 md:pb-0"
         >
-          <span>8 WEEKS</span>
-          <span className="text-[#333]">•</span>
-          <span>8 QUEENS</span>
-          <span className="text-[#333]">•</span>
+          <span>6 WEEKS</span>
           <span>N DSA PROBLEMS</span>
           <span className="text-[#333]">•</span>
-          <span>FIVE CHAMPIONS</span>
+          <span>THREE CHAMPIONS</span>
         </motion.div>
 
         {/* Bottom Glowing Gradient Border */}
