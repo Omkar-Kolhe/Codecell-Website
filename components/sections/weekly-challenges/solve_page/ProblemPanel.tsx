@@ -299,7 +299,13 @@ function PanelError({ message }: { message: string }) {
 // Main component
 // ---------------------------------------------------------------------------
 
-const DEFAULT_API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "";
+const DEFAULT_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+
+if (!DEFAULT_API_BASE_URL) {
+  throw new Error(
+    "NEXT_PUBLIC_API_BASE_URL is not defined. Check your .env.local file."
+  );
+}
 
 export default function ProblemPanel({
   problem: problemProp,
@@ -359,7 +365,7 @@ export default function ProblemPanel({
 
   return (
     <aside
-      className={`flex h-full w-[400px] shrink-0 flex-col overflow-y-auto ${className}`}
+      className={`flex h-full w-[45vw] max-w-[700px] min-w-[500px] shrink-0 flex-col overflow-y-auto ${className}`}
       style={{
         background: tokens.panel,
         borderRight: `1px solid ${tokens.border}`,

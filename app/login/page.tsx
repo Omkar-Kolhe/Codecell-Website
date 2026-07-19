@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Shield, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
+import { loginWithGoogle } from "@/lib/auth";
 
 export default function LoginPage() {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -146,9 +147,7 @@ export default function LoginPage() {
             )}
 
             <button
-              onClick={() => {
-                window.location.href = "http://localhost:8080/oauth/google/login";
-              }}
+              onClick={loginWithGoogle}
               className="
                 w-full
                 mt-6

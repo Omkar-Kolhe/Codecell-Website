@@ -1,5 +1,7 @@
+import type{ SubmitRequest,RunRequest,RunResponse,RunResult,SubmitResponse,SubmissionResult,} from "./types/submission";
+
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
 export interface Week {
   id: string;
@@ -50,6 +52,14 @@ export interface Event {
   endTime: string;
   status: EventStatus;
 }
+
+
+
+
+
+
+
+
  
 // ---------- Shared fetch helper ----------
  
@@ -118,7 +128,30 @@ async function apiGetEnveloped<T>(path: string): Promise<T> {
  
   return body.data as T;
 }
+
+async function apiPostEnveloped<TRequest,TResponse>(path: string, body: TRequest): Promise<TResponse> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("jwt_token");
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  });
  
+  const response = (await res.json()) as Envelope<TResponse>;
+ 
+  if (!res.ok || !response.success) {
+    throw new ApiError(res.status, response.error?.message ?? res.statusText);
+  }
+ 
+  return response.data as TResponse;
+}
+
+
 // ---------- Weeks ----------
  
 export function getWeeks(): Promise<Week[]> {
@@ -142,5 +175,43 @@ export function getEvents(): Promise<Event[]> {
 export function getEvent(id: string): Promise<Event> {
   return apiGetEnveloped<Event>(`/api/events/${id}`);
 }
+
+export function runCode(
+    problemId: string,
+    body: RunRequest
+): Promise<RunResponse> {
+    return apiPostEnveloped(
+        `/api/problems/${problemId}/run`,
+        body
+    );
+}
+
+export function getRun(
+    runId: string
+): Promise<RunResult> {
+    return apiGetEnveloped(
+        `/api/runs/${runId}`
+    );
+}
+
+export function submitCode(
+    problemId: string,
+    body: SubmitRequest
+): Promise<SubmitResponse> {
+    return apiPostEnveloped(
+        `/api/problems/${problemId}/submit`,
+        body
+    );
+}
+
+export function getSubmission(
+    submissionId: string
+): Promise<SubmissionResult> {
+    return apiGetEnveloped(
+        `/api/submissions/${submissionId}`
+    );
+}
+
+
  
 export { ApiError };
