@@ -3,21 +3,27 @@ import type { NextRequest } from 'next/server';
 
 // This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
-  // 1. Example: Protect the admin and internal dashboards
+  const token = request.cookies.get('jwt_token')?.value;
+
+  // 1. Prevent logged-in users from seeing the login page
+  if (request.nextUrl.pathname === '/login') {
+    if (token) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+  }
+
+  // 2. Protect the admin and internal dashboards
   if (
     request.nextUrl.pathname.startsWith('/admin') ||
     request.nextUrl.pathname.startsWith('/dashboard')
   ) {
-    // Check for an auth token in cookies (replace with NextAuth/Clerk later)
-    const token = request.cookies.get('auth-token')?.value;
-    
     if (!token) {
       // If the user isn't logged in, instantly redirect them to the login page
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }
 
-  // 2. Add future security rules here (e.g., blocking bad IPs, checking roles)
+  // 3. Add future security rules here (e.g., blocking bad IPs, checking roles)
 
   return NextResponse.next();
 }
