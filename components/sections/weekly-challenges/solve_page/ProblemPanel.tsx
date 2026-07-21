@@ -1,20 +1,5 @@
 "use client";
 
-/**
- * ProblemPanel
- * ------------
- * A left-side panel that renders the response of GET /api/problems/{problemId}.
- *
- * Usage — pass data you already fetched:
- *   <ProblemPanel problem={problemData} />
- *
- * Usage — let the panel fetch it for you:
- *   <ProblemPanel problemId="11111111-1111-1111-1111-111111111111" />
- *
- * Usage — custom fetch base (e.g. different API host):
- *   <ProblemPanel problemId={id} apiBaseUrl="https://api.example.com" />
- */
-
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import * as Tabs from "@radix-ui/react-tabs";
@@ -120,7 +105,7 @@ function Section({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
-        <PawnGlyph color={tokens.gold} />
+        {/* <PawnGlyph color={tokens.gold} /> */}
         <h3
           className="text-[11px] font-semibold uppercase tracking-[0.14em]"
           style={{ color: tokens.gold }}
@@ -470,7 +455,7 @@ export default function ProblemPanel({
           {problem.examples.length > 0 && (
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
-                <PawnGlyph color={tokens.gold} />
+                {/* <PawnGlyph color={tokens.gold} /> */}
                 <h3
                   className="text-[11px] font-semibold uppercase tracking-[0.14em]"
                   style={{ color: tokens.gold }}

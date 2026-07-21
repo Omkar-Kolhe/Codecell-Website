@@ -19,6 +19,23 @@ interface VerdictPanelProps {
   testResults: SubmissionTestResult[];
 }
 
+// ---------------------------------------------------------------------------
+// Brand tokens — kept in sync with ProblemPanel's palette
+// ---------------------------------------------------------------------------
+
+const tokens = {
+  bg: "#0A0A0A",
+  panel: "#0D0D0C",
+  border: "rgba(201,169,97,0.14)",
+  gold: "#C9A961",
+  goldBright: "#E4C368",
+  ink: "#F2F0EA",
+  muted: "#87847C",
+  green: "#3FA66E",
+  red: "#C9605A",
+  blue: "#7FA7C9",
+};
+
 export default function VerdictPanel({
   status = "IDLE",
   verdict,
@@ -55,42 +72,44 @@ export default function VerdictPanel({
   const getStatusColor = () => {
     switch (status) {
       case "IDLE":
-        return "text-slate-400";
+        return tokens.muted;
 
       case "QUEUED":
-        return "text-blue-400";
+        return tokens.blue;
 
       case "RUNNING":
-        return "text-yellow-400 animate-pulse";
+        return tokens.goldBright;
 
       case "FAILED":
-        return "text-red-500";
+        return tokens.red;
 
       case "COMPLETED":
         switch (verdict) {
           case "ACCEPTED":
-            return "text-green-400";
+            return tokens.green;
 
           case "WRONG_ANSWER":
-            return "text-red-400";
+            return tokens.red;
 
           case "TIME_LIMIT_EXCEEDED":
-            return "text-yellow-400";
+            return tokens.goldBright;
 
           case "RUNTIME_ERROR":
-            return "text-orange-400";
+            return "#D98E5C";
 
           case "COMPILATION_ERROR":
-            return "text-red-500";
+            return tokens.red;
 
           default:
-            return "text-blue-400";
+            return tokens.blue;
         }
 
       default:
-        return "text-slate-400";
+        return tokens.muted;
     }
   };
+
+  const isPulsing = status === "RUNNING";
 
   const getOutput = () => {
     switch (status) {
@@ -107,7 +126,7 @@ export default function VerdictPanel({
         return stderr || "A system error occurred while judging.";
 
       case "COMPLETED":
-        return (errorMessage ||stderr ||stdout ||"Execution completed.");
+        return errorMessage || stderr || stdout || "Execution completed.";
 
       default:
         return "";
@@ -115,14 +134,26 @@ export default function VerdictPanel({
   };
 
   return (
-    <div className="bg-[#111827] border-t border-slate-700">
+    <div style={{ background: tokens.panel, borderTop: `1px solid ${tokens.border}` }}>
       {/* Header */}
-      <div className="px-5 py-3 border-b border-slate-700 flex items-center justify-between">
-        <h2 className="text-white font-semibold text-lg">
+      <div
+        className="px-5 py-3 flex items-center justify-between"
+        style={{ borderBottom: `1px solid ${tokens.border}` }}
+      >
+        <h2
+          className="font-bold text-lg"
+          style={{
+            color: tokens.ink,
+            fontFamily: "Georgia, 'Playfair Display', 'Times New Roman', serif",
+          }}
+        >
           Verdict
         </h2>
 
-        <span className={`font-semibold ${getStatusColor()}`}>
+        <span
+          className={`font-semibold text-sm ${isPulsing ? "animate-pulse" : ""}`}
+          style={{ color: getStatusColor(), fontFamily: "ui-monospace, monospace" }}
+        >
           {getStatusText()}
         </span>
       </div>
@@ -130,7 +161,7 @@ export default function VerdictPanel({
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 p-4">
         <StatCard
-          icon={<Clock size={18} />}
+          icon={<Clock size={16} />}
           label="Time"
           value={
             status === "COMPLETED" && executionTime !== undefined
@@ -140,7 +171,7 @@ export default function VerdictPanel({
         />
 
         <StatCard
-          icon={<MemoryStick size={18} />}
+          icon={<MemoryStick size={16} />}
           label="Memory"
           value={
             status === "COMPLETED" && memoryUsed !== undefined
@@ -150,44 +181,56 @@ export default function VerdictPanel({
         />
 
         <StatCard
-          icon={<Cpu size={18} />}
+          icon={<Cpu size={16} />}
           label="Score"
           value={
-            status === "COMPLETED" && score !== undefined
-              ? `${score}`
-              : "--"
+            status === "COMPLETED" && score !== undefined ? `${score}` : "--"
           }
         />
       </div>
 
       {/* Scrollable Content */}
       <div className="p-4 space-y-4">
-
         {/* Output */}
-        <div className="bg-[#0f172a] rounded-lg border border-slate-700">
-          <div className="px-4 py-2 border-b border-slate-700 text-sm text-slate-300 font-medium">
+        <div
+          className="rounded-lg"
+          style={{ background: tokens.bg, border: `1px solid ${tokens.border}` }}
+        >
+          <div
+            className="px-4 py-2 text-sm font-medium"
+            style={{ borderBottom: `1px solid ${tokens.border}`, color: tokens.muted }}
+          >
             Output
           </div>
 
-          <pre className="p-4 whitespace-pre-wrap overflow-x-auto font-mono text-sm text-green-300">
+          <pre
+            className="p-4 whitespace-pre-wrap overflow-x-auto text-sm"
+            style={{ color: tokens.green, fontFamily: "ui-monospace, monospace" }}
+          >
             {getOutput()}
           </pre>
         </div>
 
         {/* Test Case Results */}
         {testResults.length > 0 && (
-          <div className="rounded-lg border border-slate-700 overflow-hidden">
-            <div className="px-4 py-2 bg-slate-800 border-b border-slate-700 text-sm font-medium text-slate-300">
+          <div
+            className="rounded-lg overflow-hidden"
+            style={{ border: `1px solid ${tokens.border}` }}
+          >
+            <div
+              className="px-4 py-2 text-sm font-medium"
+              style={{ background: tokens.bg, borderBottom: `1px solid ${tokens.border}`, color: tokens.gold }}
+            >
               Test Case Results
             </div>
 
             <table className="w-full text-sm">
-              <thead className="bg-slate-900 text-slate-400">
+              <thead style={{ background: tokens.bg, color: tokens.muted }}>
                 <tr>
-                  <th className="px-4 py-2 text-left">Test</th>
-                  <th className="px-4 py-2 text-left">Verdict</th>
-                  <th className="px-4 py-2 text-left">Time</th>
-                  <th className="px-4 py-2 text-left">Memory</th>
+                  <th className="px-4 py-2 text-left font-medium">Test</th>
+                  <th className="px-4 py-2 text-left font-medium">Verdict</th>
+                  <th className="px-4 py-2 text-left font-medium">Time</th>
+                  <th className="px-4 py-2 text-left font-medium">Memory</th>
                 </tr>
               </thead>
 
@@ -195,26 +238,28 @@ export default function VerdictPanel({
                 {testResults.map((result) => (
                   <tr
                     key={result.testCaseId}
-                    className="border-t border-slate-700 hover:bg-slate-800/50"
+                    className="transition-colors hover:bg-[#C9A96110]"
+                    style={{ borderTop: `1px solid ${tokens.border}`, color: tokens.ink }}
                   >
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2" style={{ fontFamily: "ui-monospace, monospace" }}>
                       {result.orderNum + 1}
                     </td>
 
-                    <td className="px-4 py-2">
+                    <td
+                      className="px-4 py-2 font-medium"
+                      style={{
+                        color: result.verdict === "ACCEPTED" ? tokens.green : tokens.red,
+                      }}
+                    >
                       {result.verdict}
                     </td>
 
-                    <td className="px-4 py-2">
-                      {result.timeMs !== undefined
-                        ? `${result.timeMs} ms`
-                        : "-"}
+                    <td className="px-4 py-2" style={{ color: tokens.muted }}>
+                      {result.timeMs !== undefined ? `${result.timeMs} ms` : "-"}
                     </td>
 
-                    <td className="px-4 py-2">
-                      {result.memoryKb !== undefined
-                        ? `${result.memoryKb} KB`
-                        : "-"}
+                    <td className="px-4 py-2" style={{ color: tokens.muted }}>
+                      {result.memoryKb !== undefined ? `${result.memoryKb} KB` : "-"}
                     </td>
                   </tr>
                 ))}
@@ -233,21 +278,26 @@ interface StatCardProps {
   value: string;
 }
 
-function StatCard({
-  icon,
-  label,
-  value,
-}: StatCardProps) {
+function StatCard({ icon, label, value }: StatCardProps) {
   return (
-    <div className="rounded-lg bg-slate-800 border border-slate-700 p-3">
-      <div className="flex items-center gap-2 text-slate-400 mb-2">
+    <div
+      className="rounded-lg p-3"
+      style={{ background: tokens.bg, border: `1px solid ${tokens.border}` }}
+    >
+      <div className="flex items-center gap-2 mb-2" style={{ color: tokens.gold }}>
         {icon}
-        <span className="text-xs uppercase tracking-wide">
+        <span
+          className="text-xs uppercase tracking-wide"
+          style={{ fontFamily: "ui-monospace, monospace", color: tokens.muted }}
+        >
           {label}
         </span>
       </div>
 
-      <div className="text-white text-lg font-semibold">
+      <div
+        className="text-lg font-semibold"
+        style={{ color: tokens.ink, fontFamily: "ui-monospace, monospace" }}
+      >
         {value}
       </div>
     </div>

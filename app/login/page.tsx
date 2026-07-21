@@ -27,10 +27,9 @@ export default function LoginPage() {
 
         {/* Header */}
         <div className="border-b border-[#2A2A2A] pb-4 mb-6">
-          <div className="flex items-center gap-2 mb-1.5">
+          {/* <div className="flex items-center gap-2 mb-1.5">
             <Shield size={14} className="text-[#FF4D00]" />
-            <span className="text-[10px] text-[#4A4A4A] uppercase tracking-widest">SECURE_LOGIN_SHELL</span>
-          </div>
+            {/* <span className="text-[10px] text-[#4A4A4A] uppercase tracking-widest">SECURE_LOGIN_SHELL</span> */}
           <h2 className="text-3xl font-bold uppercase tracking-tight text-[#F0EDE6] font-display">
             LOGIN
           </h2>

@@ -1,12 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ProblemPanel from "@/components/sections/weekly-challenges/solve_page/ProblemPanel";
 import CodeEditor from "@/components/sections/weekly-challenges/solve_page/CodeEditor";
 import VerdictPanel from "@/components/sections/weekly-challenges/solve_page/VerdictPanel";
-import { useState } from "react";
-// import RunButton from "@/components/sections/weekly-challenges/solve_page/RunButton";
-// import SubmitButton from "@/components/sections/weekly-challenges/solve_page/SubmitButton";
 import {
   runCode,
   submitCode,
@@ -15,144 +12,201 @@ import {
 
 import type { SubmissionState, Language } from "@/lib/types/submission";
 
-interface PageProps {
-  params: {
+type PageProps = {
+  params: Promise<{
     problemId: string;
-  };
-}
-
-const Page = ({ params }: PageProps) => {
-  const { problemId } = params;
-
-  const [activeAction, setActiveAction] = useState<"RUN" | "SUBMIT" | null >(null);
-  
-  const [submission, setSubmission] = useState<SubmissionState>({ status: "IDLE", testResults: [], });
-
-  const pollSubmission = async (submissionId: string) => {
-  try {
-    const submission = await getSubmission(submissionId);
-
-    setSubmission(prev => ({
-      ...prev,
-      status: submission.status,
-      verdict: submission.verdict,
-      score: submission.score,
-      executionTime: submission.executionTimeMs,
-      memoryUsed: submission.memoryUsedKb,
-      testResults: submission.testResults,
-      errorMessage: submission.errorMessage,
-    }));
-
-    if (
-      submission.status === "COMPLETED" ||
-      submission.status === "FAILED"
-    ) 
-    {
-      setActiveAction(null);
-      return;
-    }
-
-    setTimeout(() => {
-      pollSubmission(submissionId);
-    }, 1000);
-  } catch (err) {
-    console.error("Polling failed:", err);
-
-    setSubmission(prev => ({
-      ...prev,
-      status: "FAILED",
-      stderr: "Polling failed.",
-    }));
-  }
+  }>;
 };
 
+const POLL_INTERVAL_MS = 1000;
+const MAX_POLL_ERRORS = 3;
 
-  const handleRun = async (
-      code: string,
-      language: Language
-    ) => {
-      try {
-        setActiveAction("RUN");
+export default function Page({ params }: PageProps) {
+  // params is a Promise even in the client — React.use() is the correct way
+  // to unwrap it here, since a client component cannot be `async`.
+  const { problemId } = React.use(params);
 
-        const response = await runCode(problemId, {
-          language,
-          sourceCode: code,
-        });
+  const [activeAction, setActiveAction] = useState<"RUN" | "SUBMIT" | null>(null);
+  const [submission, setSubmission] = useState<SubmissionState>({
+    status: "IDLE",
+    testResults: [],
+  });
 
-        console.log("Run Response:", response);
-      } catch (err) {
-        console.error("Run failed:", err);
-      } finally {
-         setActiveAction(null);
+  // Track mounted state + in-flight timers/errors so polling never leaks
+  // and never spins forever on repeated failures.
+  const isMountedRef = useRef(true);
+  const pollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollErrorCountRef = useRef(0);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (pollTimeoutRef.current) {
+        clearTimeout(pollTimeoutRef.current);
+        pollTimeoutRef.current = null;
       }
     };
+  }, []);
 
-  const handleSubmit = async (
-  code: string,
-  language: Language
-) => {
-  try {
-    
-    const response = await submitCode(problemId, {
-      language,
-      sourceCode: code,
-    });
+  const stopPolling = () => {
+    if (pollTimeoutRef.current) {
+      clearTimeout(pollTimeoutRef.current);
+      pollTimeoutRef.current = null;
+    }
+  };
 
-    setSubmission({
-      status: "QUEUED",
-      submissionId: response.submissionId, 
-      testResults: []
-    });
-    
-    pollSubmission(response.submissionId);
+  const pollSubmission = async (submissionId: string) => {
+    if (!isMountedRef.current) return;
 
-    console.log("Submit Response:", response);
+    try {
+      const result = await getSubmission(submissionId);
 
-  } catch (err) {
-    console.error("Submit failed:", err);
-  } 
-};
+      if (!isMountedRef.current) return;
+
+      pollErrorCountRef.current = 0;
+
+      setSubmission((prev) => ({
+        ...prev,
+        status: result.status,
+        verdict: result.verdict,
+        score: result.score,
+        executionTime: result.executionTimeMs,
+        memoryUsed: result.memoryUsedKb,
+        testResults: result.testResults ?? [],
+        errorMessage: result.errorMessage,
+      }));
+
+      if (result.status === "COMPLETED" || result.status === "FAILED") {
+        setActiveAction(null);
+        stopPolling();
+        return;
+      }
+
+      pollTimeoutRef.current = setTimeout(() => {
+        pollSubmission(submissionId);
+      }, POLL_INTERVAL_MS);
+    } catch (err) {
+      console.error("Polling failed:", err);
+
+      pollErrorCountRef.current += 1;
+
+      if (!isMountedRef.current) return;
+
+      if (pollErrorCountRef.current >= MAX_POLL_ERRORS) {
+        setSubmission((prev) => ({
+          ...prev,
+          status: "FAILED",
+          errorMessage: "Lost connection while checking submission status.",
+        }));
+        setActiveAction(null);
+        stopPolling();
+        return;
+      }
+
+      // Back off and retry rather than giving up on a single transient error.
+      pollTimeoutRef.current = setTimeout(() => {
+        pollSubmission(submissionId);
+      }, POLL_INTERVAL_MS);
+    }
+  };
+
+  const handleRun = async (code: string, language: Language) => {
+    if (!problemId) return;
+
+    try {
+      setActiveAction("RUN");
+      const response = await runCode(problemId, {
+        language,
+        sourceCode: code,
+      });
+      console.log("Run Response:", response);
+    } catch (err) {
+      console.error("Run failed:", err);
+    } finally {
+      if (isMountedRef.current) {
+        setActiveAction(null);
+      }
+    }
+  };
+
+  const handleSubmit = async (code: string, language: Language) => {
+    if (!problemId) return;
+
+    try {
+      setActiveAction("SUBMIT");
+
+      const response = await submitCode(problemId, {
+        language,
+        sourceCode: code,
+      });
+
+      if (!isMountedRef.current) return;
+
+      setSubmission({
+        status: "QUEUED",
+        submissionId: response.submissionId,
+        testResults: [],
+      });
+
+      pollSubmission(response.submissionId);
+
+      console.log("Submit Response:", response);
+    } catch (err) {
+      console.error("Submit failed:", err);
+      if (isMountedRef.current) {
+        setActiveAction(null);
+        setSubmission((prev) => ({
+          ...prev,
+          status: "FAILED",
+          errorMessage: "Submission failed. Please try again.",
+        }));
+      }
+    }
+  };
+
+  if (!problemId) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-slate-400">
+        Problem not found.
+      </div>
+    );
+  }
 
   return (
-  <div className="flex min-h-screen">
-
-    {/* Left Panel - 45% */}
-    <div className="w-[45%] border-r border-slate-700">
-      <ProblemPanel problemId={problemId} />
-    </div>
-
-    {/* Right Panel - 55% */}
-    <div className="w-[55%] overflow-y-auto">
-
-      {/* Code Editor - 60% */}
-      <div className="h-[60vh]">
-        <CodeEditor
-          status={submission.status}
-          activeAction={activeAction}
-          onRun={handleRun}
-          onSubmit={handleSubmit}
-        />
+    <div className="flex min-h-screen">
+      {/* Left Panel - 45% */}
+      <div className="w-[45%] border-r border-slate-700">
+        <ProblemPanel problemId={problemId} />
       </div>
 
-      {/* Verdict Panel - 40% */}
-      <div>
-        <VerdictPanel
-          status={submission.status}
-          verdict={submission.verdict}
-          executionTime={submission.executionTime}
-          memoryUsed={submission.memoryUsed}
-          score={submission.score}
-          stdout={submission.stdout}
-          stderr={submission.stderr}
-          errorMessage={submission.errorMessage}
-          testResults={submission.testResults}
-      />
+      {/* Right Panel - 55% */}
+      <div className="w-[55%] overflow-y-auto">
+        {/* Code Editor - 60% */}
+        <div className="h-[60vh]">
+          <CodeEditor
+            status={submission.status}
+            activeAction={activeAction}
+            onRun={handleRun}
+            onSubmit={handleSubmit}
+          />
+        </div>
+
+        {/* Verdict Panel - 40% */}
+        <div>
+          <VerdictPanel
+            status={submission.status}
+            verdict={submission.verdict}
+            executionTime={submission.executionTime}
+            memoryUsed={submission.memoryUsed}
+            score={submission.score}
+            stdout={submission.stdout}
+            stderr={submission.stderr}
+            errorMessage={submission.errorMessage}
+            testResults={submission.testResults}
+          />
+        </div>
       </div>
-
     </div>
-
-  </div>
-);
-};
-
-export default Page;
+  );
+}
