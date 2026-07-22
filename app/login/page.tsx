@@ -42,7 +42,7 @@ export default function LoginPage() {
             <span className="uppercase">OAUTH_V2</span>
           </div>
           <button
-            onClick={() => window.location.href = "http://localhost:8080/oauth/google/login"}
+            onClick={() => window.location.href = "http://localhost:8000/oauth/google/login"}
             className="
               w-full 
               bg-white text-black 
